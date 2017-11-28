@@ -1,7 +1,7 @@
 const Airtable = require('../Airtable');
 
 
-const key = 'keyrCQJ75sESXq2aA';
+const key = '';
 const base = 'appj0mDe8gFv0QQy8';
 
 const Test = Airtable.defineTable('Test', key, base, {
@@ -16,7 +16,7 @@ const Test = Airtable.defineTable('Test', key, base, {
     format: 'Integer',
     default: 18
   },
-  has: {
+  Address: {
     type: Airtable.FieldTypes.SingleLineText
   }
 });
