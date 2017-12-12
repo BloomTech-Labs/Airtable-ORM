@@ -10,7 +10,7 @@ class Field {
   }
 
   get options() {
-    return this._options;
+    return this._options || {};
   }
 
   get type() {
@@ -27,7 +27,7 @@ class Field {
   }
 
   set options(options) {
-    if (this.options !== undefined)
+    if (this._options !== undefined)
       throw new Error('FieldError: Options can not be changed!');
     if (typeof options !== 'object' && !Array.isArray(options))
       throw new Error('FieldError: Expected key-value Object but received a(n) ' + Array.isArray(options) ? 'array' : typeof options + '.');
@@ -42,6 +42,10 @@ class Field {
 
   set value(value) {
     this._value = value;
+  }
+
+  isPrimary() {
+    return this.options.primary || false;
   }
 
   copy() {

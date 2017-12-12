@@ -4,6 +4,7 @@ const Field = require('./Field');
 *  A valid email address (e.g. andrew@gmail.com).
 *  Parameters:
 *     name: <String>
+*     [value: <String>]
 */
 class Email extends Field {
   constructor(name, value) {

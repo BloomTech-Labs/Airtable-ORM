@@ -4,41 +4,75 @@ const Airtable = require('../Airtable');
 const key = '';
 const base = 'appj0mDe8gFv0QQy8';
 
-const Test = Airtable.defineTable('Test', key, base, {
+const airtable = new Airtable(key);
+
+airtable.defineBase('Test', base);
+
+const Students = airtable.defineTable('Students', airtable.getBase('Test'), {
   email: {
     name: 'Email',
     type: Airtable.FieldTypes.Email,
     primary: true
   },
+  name: {
+    name: 'Name',
+    type: Airtable.FieldTypes.SingleLineText
+  },
+  slackUsername: {
+    name: 'Slack Username',
+    type: Airtable.FieldTypes.SingleLineText
+  },
   age: {
     name: 'Age',
     type: Airtable.FieldTypes.NumberField,
-    format: 'Integer',
-    default: 18
+    format: 'Integer'
   },
-  Address: {
-    type: Airtable.FieldTypes.SingleLineText
+  attendance: {
+    name: 'Attendance',
+    type: Airtable.FieldTypes.LinkToAnotherRecord,
+    table: 'Attendance',
+    multi: true
   }
 });
 
-// console.log('query spam')
-// Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query();Test.query().then(() => console.log('sending real query'));
-const records = Test.query().then((records) => {
-  if (records !== undefined || records.length !== 0) {
-    records.forEach((record, index) => {
-      console.log('Record: ', record.stringify(null, 2))
-      if (record.has('email') && index === 1) {
-        // record.fields.email.value = 'jeff';
-        record.email = 'jeff';
-        record.save();
-        record.age = 27;
-        record.fields.bob = 'hi there';
-        record.save();
-        console.log(record.bob);
-        console.log('Record: ', record.stringify(null, 2))
-      }
-    });
+const Attendance = airtable.defineTable('Attendance', airtable.getBase('Test'), {
+  date: {
+    name: 'Date',
+    type: Airtable.FieldTypes.DateField,
+    format: 'Friendly',
+    primary: true
+  },
+  students: {
+    name: 'Students',
+    type: Airtable.FieldTypes.LinkToAnotherRecord,
+    table: 'Students',
+    multi: true
+  },
+  names: {
+    name: 'Names',
+    type: Airtable.FieldTypes.Lookup,
+    table: 'Students',
+    field: 'Name'
+  },
+});
+
+Students.query().then((records) => {
+  try {
+    if (records !== undefined || records.length !== 0) {
+      records.forEach((record, index) => {
+        record.attendance.forEach((attendance) => {
+          attendance.students.forEach((student) => {
+            student.name = "bob";
+          })
+        })
+        console.log(record.stringify(null, 2));
+      });
+      if (records.hasNextPage())
+        records.nextPage().then((records) => {
+
+        })
+    }
+  } catch (error) {
+    console.error(error);
   }
 }).catch(error => console.log(error.stack));
-
-module.exports = Test;

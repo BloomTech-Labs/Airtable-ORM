@@ -14,6 +14,41 @@ class Airtable {
     return new Airtable(key).defineTable(name, base, fields);
   }
 
+  static defineBase(name, base) {
+    if (this._bases === undefined) {
+      this._bases = {};
+    }
+    this._bases[name] = base;
+  }
+
+  static getBase(name) {
+    return this._bases[name];
+  }
+
+  static getTable(key, name, base) {
+    if (this._airtables[key] === undefined) {
+      return undefined;
+    }
+    return this._airtables[key].getTable(name, base);
+  }
+
+  static findTable(name, key) {
+    const searchTable = (key) => {
+      if (this._airtables[key] !== undefined)
+        return this._airtables[key].findTable(name);
+    }
+    if (key !== null && key !== undefined)
+      return searchTable(key);
+    else {
+      const keys = Object.keys(this._airtables);
+      for (let i = 0; i < keys.length; i++) {
+        const table = searchTable(keys[i]);
+        if (table !== undefined)
+          return table;
+      }
+    }
+  }
+
   constructor(key, limit = 5) {
     if (Airtable._airtables[key] !== undefined)
       return Airtable._airtables[key];
@@ -72,20 +107,55 @@ class Airtable {
   addTable(table) {
     if (!(table instanceof Table))
       throw new Error('AirtableError: Expected table to be a Table but received a(n) ' + typeof table + '.');
-    if (this.tables[table.name] !== undefined)
+    if (this.tables[table.base] === undefined)
+      this.tables[table.base] = {};
+    if (this.tables[table.base][table.name] !== undefined)
       throw new Error('AirtableError: A table with the same name as another was attempted to be defined.');
-    this.tables[table.name] = table;
+    const obj = {}
+    obj[table.name] = table;
+    Object.assign(this.tables[table.base], obj);
+  }
+
+  defineBase(name, base) {
+    Airtable.defineBase(name, base);
   }
 
   defineTable(name, base, fields) {
     if (name === undefined || base === undefined || fields === undefined)
       throw new Error('AirtableError: defineTable requires a name, base, and fields.');
     this.addTable(new Table(this, base, name, fields));
-    return this.tables[name];
+    return this.tables[base][name];
   }
 
-  getTable(name) {
-    return this.tables[name];
+  getBase(name) {
+    return Airtable.getBase(name);
+  }
+
+  getTable(name, base) {
+    return this.tables[base][name];
+  }
+
+  findTable(search) {
+    if (typeof search === 'string' || typeof search === 'function') {
+      const results = [];
+      const bases = Object.keys(this.tables);
+      for (let i = 0; i < bases.length; i++) {
+        const base = this.tables[bases[i]];
+        const tables = Object.values(base);
+        for (let j = 0; j < tables.length; j++) {
+          const table = tables[i];
+          if (typeof search === 'function') {
+            const res = search(table);
+            if (res === true)
+              return table;
+          } else if (table.name === search) {
+            results.push(table);
+          }
+        }
+      }
+      if (typeof search === 'string')
+        return results;
+    }
   }
 
   sendRequest(request) {
@@ -128,6 +198,10 @@ class Airtable {
       }
     }
     execute();
+  }
+
+  _maskKey(key) {
+    return `${key.substring(0, key.length - 9)}*****${key.substring(key.length - 4)}`;
   }
 
 }

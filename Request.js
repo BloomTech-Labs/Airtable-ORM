@@ -148,12 +148,14 @@ class Request {
   *    A Promise Object.
   */
   send(key) {
+    console.log('sending request');
     if (typeof key !== 'string')
       throw new Error('RequestError: Expected key to be a String but received a(n) ' + typeof key + '.');
     return new Promise((resolve, reject) => {
       const headers = Object.assign(this.headers, { Authorization: `Bearer ${key}` })
       let url = `https://api.airtable.com/v0/${this.base}/${this.tableName}` + (this.appendID ? `/${this.appendID}` : '');
       let promise;
+      console.log(url);
       switch(this.type.toLowerCase()) {
         case 'get':
           promise = axios.get(url, { params: this.parameters, headers, withCredentials: true });

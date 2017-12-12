@@ -1,4 +1,7 @@
-const { Field, UnknownField }  = require('./fields');
+const Field = require('./fields/Field')
+const LinkToAnotherRecord = require('./fields/LinkToAnotherRecord')
+const UnknownField = require('./fields/UnknownField')
+const Request = require('./Request');
 
 class Record {
   constructor(table, id, createdTime, fields = {}) {
@@ -27,6 +30,15 @@ class Record {
 
   get id() {
     return this._id;
+  }
+
+  get primaryField() {
+    const entries = Object.entries(this.fields);
+    for (let i = 0; i < entries.length; i++) {
+      const [key, field] = entries[i];
+      if (field.isPrimary())
+        return field.value;
+    }
   }
 
   get table() {
@@ -80,6 +92,15 @@ class Record {
     this._id = id;
   }
 
+  set primaryField(value) {
+    const entries = Object.entries(this.fields);
+    for (let i = 0; i < entries.length; i++) {
+      const [key, field] = entries[i];
+      if (field.isPrimary())
+        return field.value = value;
+    }
+  }
+
   set table(table) {
     if (this.table !== undefined)
       throw new Error('RecordError: table cannot be changed!');
@@ -118,7 +139,7 @@ class Record {
   }
 
   save() {
-    this.update();
+    return this.update();
   }
 
   update() {
@@ -141,8 +162,27 @@ class Record {
       console.log('Changed fields: ', JSON.stringify(changed, null, 2));
     if (newFields.length > 0)
       console.log('New fields: ', JSON.stringify(newFields, null, 2));
-    this.fields = ['change fields', this.fields];
-
+    return new Promise((resolve, reject) => {
+      this.table._airtable.sendRequest(new Request(
+        Request.types.patch,
+        {
+          base: this.table.base,
+          tableName: this.table.name,
+          appendID: this.id,
+          data: {
+            fields: changed.reduce((obj, item) => {
+              obj[this.fields[item].name] = this.fields[item].value;
+              return obj;
+            }, {})
+          }
+        },
+        (res) => {
+          this.fields = ['change fields', this.fields];
+          resolve(this);
+        },
+        (...args) => reject(...args)
+      ));
+    });
   }
 
   dangerouslyReplace() {
@@ -236,11 +276,19 @@ class Record {
     return JSON.stringify({
       id: this.id,
       fields: {
-        ...Object.entries(this.fields).reduce((obj, [key, value]) => {
-          value = value.value;
-          obj[key] = typeof value !== 'string' ? typeof value !== 'number' ? typeof value !== 'boolean' ? Array.isArray(value) ? value.toString()
-            : value : value : value : value;
-          return obj;
+        ...Object.entries(this.fields).reduce((fields, [key, field]) => {
+          let value = field.value;
+          if (value instanceof Record)
+            value = `Record [${value.table.name} : ${value.id}]`;
+          if (Array.isArray(value))
+            value = value.map((value) => {
+              if (value instanceof Record)
+                return `Record [${value.table.name} : ${value.id}]`;
+              else
+                return value;
+            });
+            fields[key] = value === undefined ? null : value
+          return fields;
         }, {})
       },
       createdTime: this.createdTime
