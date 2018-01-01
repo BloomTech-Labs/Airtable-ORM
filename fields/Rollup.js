@@ -1,47 +1,43 @@
 const Field = require('./Field');
-const LinkToAnotherRecord = require ('./LinkToAnotherRecord');
 
-// still needs to be done. this is just a copy of Lookup right now
-
-/* Rollup
-*  Rollup a field on linked records.
-*  Parameters:
-*     name: <String>
-*     [value: <String>]
-*     [options: { table: <String>, field: <String> }]
-*/
+/* Rollup *limited support*
+ * A rollup allos you to summarize data from records that
+ * are linked to this table. For more information on rollups
+ * and a complete function reference, see the Rollup
+ * Field Reference on the Airtable website.
+ * https://support.airtable.com/hc/en-us/articles/202576599-Rollup-Field-Reference
+ * This field will have outdated data as soon as another field
+ * it relies on changes.
+ * Parameters:
+ *   name: <String>
+ *   value: <Number>
+ *     The value cannot be changed.
+ */
 class Rollup extends Field {
-  constructor(name, value, options) {
-    super(name, value, options);
-    this.type = 'Lookup';
+  constructor(name, value, config) {
+    super(name, value, config);
+    this.type = 'Rollup';
   }
 
-  get link() {
-    return this._link;
-  }
-
-  set link(link) {
-    if (this._link !== undefined)
-      throw new Error('LookupError: link cannot be changed!');
-    if (!(link instanceof LinkToAnotherRecord))
-      throw new Error('LookupError: link must be a LinkToAnotherRecord Object!');
-    this._link = link;
+  get _changed() {
+    return false;
   }
 
   get value() {
-    if (this.link === undefined || this.link.value === undefined)
-      return;
-    if (Array.isArray(this.link.value)) {
-      return this.link.value.map((record) => record[this.options.field])
-    }
-    return this.link.value[this.options.field];
+    return this._value;
+  }
+
+  set _changed(_) {
+    return;
   }
 
   set value(value) {
-    if (value === undefined)
-      return;
-    console.error("LookupError: The value for a Lookup was attempted to be changed. It doesn't work that way...");
+    if (this._value === undefined)
+      this._value = value;
+    else
+      throw new Error(`RollupError: Rollup Fields cannot be modified.`)
   }
 }
 
 module.exports = Rollup;
+

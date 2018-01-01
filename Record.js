@@ -1,21 +1,37 @@
-const Field = require('./fields/Field')
-const LinkToAnotherRecord = require('./fields/LinkToAnotherRecord')
-const UnknownField = require('./fields/UnknownField')
+const Field = require('./fields/Field');
+const DateField = require('./fields/DateField');
+const CreatedTime = require('./fields/CreatedTime');
+const Currency = require('./fields/Currency');
+const Percent = require('./fields/Percent');
+const LinkToAnotherRecord = require('./fields/LinkToAnotherRecord');
+const UnknownField = require('./fields/UnknownField');
 const Request = require('./Request');
 
 class Record {
+  static get printRecordChanges() {
+    return this._printRecordChanges;
+  }
+
+  static set printRecordChanges(value) {
+    this._printRecordChanges = value;
+  }
+
   constructor(table, id, createdTime, fields = {}) {
-    this.createdTime = new Date(createdTime);
+    this.createdTime = new CreatedTime('createdTime', createdTime, {
+      dateFormat: 'ISO',
+      includeTime: true,
+      timeFormat: 24,
+      includeSeconds: true
+    });
     this.id = id;
-    this._configureBlacklist();
     this._cache_ = [];
     this.fields = fields;
     this.table = table;
   }
 
   /* _fields_
-  *  Do not use this!
-  */
+   * Do not use this!
+   */
   get _fields_() {
     return this.__fields__;
   }
@@ -33,12 +49,7 @@ class Record {
   }
 
   get primaryField() {
-    const entries = Object.entries(this.fields);
-    for (let i = 0; i < entries.length; i++) {
-      const [key, field] = entries[i];
-      if (field.isPrimary())
-        return field.value;
-    }
+    return this.getPrimaryField().value;
   }
 
   get table() {
@@ -46,9 +57,13 @@ class Record {
   }
 
   /* _fields_
-  *  Do not use this!
-  */
+   *  Do not use this!
+   */
   set _fields_(fields) {
+    Object.entries(fields).forEach(([key, field]) => {
+      if (!(field instanceof Field))
+        throw new Error(`RecordError: A field '${key}' was not an instance of a Field object. Received: '${JSON.stringify(field, null, 2)}'`);
+    });
     this.__fields__ = this._copyFields(fields);
   }
 
@@ -59,10 +74,12 @@ class Record {
   }
 
   set fields(fields) {
-    if (this.fields !== undefined && (!Array.isArray(fields) && fields.length !== 2))
-      throw new Error('RecordError: fields cannot be changed!');
-    if (Array.isArray(fields) && fields[0] === 'change fields')
-      fields = fields[1];
+    if (fields === undefined)
+      return;
+    Object.entries(fields).forEach(([key, field]) => {
+      if (!(field instanceof Field))
+        throw new Error(`RecordError: A field '${key}' was not an instance of a Field object. Received: '${JSON.stringify(field, null, 2)}'`);
+    });
     if (this._cache_ !== undefined)
       this._cache_.forEach((key) => {
         Object.defineProperty(this, key, {
@@ -74,7 +91,7 @@ class Record {
       });
     this._cache_ = Object.keys(fields);
     this._cache_.forEach((key) => {
-      if (this._checkField(key))
+      if (Record._checkField(key))
         Object.defineProperty(this, key, {
           get: () => this.fields[key].value,
           set: (value) => this.fields[key].value = value,
@@ -83,6 +100,8 @@ class Record {
         });
     });
     this._fields = fields;
+    // it saves a copy so that if someone does <record>.fields.<key> = <value> instead of
+    // <record>.fields.<key>.value = <value> then it will be able to fix it and continue operation.
     this._fields_ = fields;
   }
 
@@ -93,12 +112,7 @@ class Record {
   }
 
   set primaryField(value) {
-    const entries = Object.entries(this.fields);
-    for (let i = 0; i < entries.length; i++) {
-      const [key, field] = entries[i];
-      if (field.isPrimary())
-        return field.value = value;
-    }
+    this.getPrimaryField().value = value;
   }
 
   set table(table) {
@@ -109,7 +123,13 @@ class Record {
     this._table = table;
   }
 
-  getField(name) {
+  getFieldByKey(key) {
+    if (this.fields === undefined)
+      return;
+    return this.fields[key];
+  }
+
+  getFieldByName(name) {
     if (this.fields === undefined)
       return;
     const values = Object.values(this.fields);
@@ -120,48 +140,160 @@ class Record {
     }
   }
 
-  has(key) {
-    return this.fields[key] !== undefined;
+  getPrimaryField() {
+    const entries = Object.entries(this.fields);
+    for (let i = 0; i < entries.length; i++) {
+      const [key, field] = entries[i];
+      if (field.isPrimary())
+        return field;
+    }
+    throw new Error(`RecordError: No primary field set for Table '${this.table.name}'`);
+  }
+
+  fget(name) {
+    return this.getFieldByName(name);
+  }
+
+  fgetk(key) {
+    return this.getFieldByKey(key);
   }
 
   get(name) {
-    const field = this.getField(name);
+    const field = this.getFieldByName(name);
     if (field === undefined)
       return;
     return field.value;
   }
 
+  getk(key) {
+    const field = this.getFieldByKey(key);
+    if (field === undefined)
+      return;
+    return field.value;
+  }
+
+  has(name) {
+    return this.getFieldByName(name) !== undefined;
+  }
+
+  hask(key) {
+    return this.getFieldByKey(key) !== undefined;
+  }
+
   put(name, value) {
-    const field = this.getField(name);
+    const field = this.getFieldByName(name);
     if (field === undefined)
       throw new Error(`TableError: Field '${name}' does not exist!`);
     field.value = value;
   }
 
-  save() {
-    return this.update();
+  putk(key, value) {
+    const field = this.getFieldByKey(key);
+    if (field === undefined)
+      throw new Error(`TableError: Field '${key}' does not exist!`);
+    field.value = value;
   }
 
-  update() {
+  save(deepSave = true) {
+    return this.update(deepSave);
+  }
+
+  update(deepUpdate = true) {
     const changed = [];
-    const newFields = [];
     Object.entries(this.fields).forEach(([key, field]) => {
       if (!(field instanceof Field)) {
-        if (this._fields_[key] !== undefined)
-          field = new this._fields_[key].constructor(field);
-        else
-          field = new UnknownField(key, field);
-        this.fields[key] = field;
+        //this will get triggered if someone does <record>.fields.<key> = <value> rather than <record>.fields.<key>.value = <value>
+        if (this._fields_[key] !== undefined) {
+          console.error(new Error(
+            `RecordError: The field '${key}' in table '${this.table.name}' was improperly set. ` +
+            'Attempting to fix the error....'
+          ));
+          this.fields[key] = this._fields_[key].copy();
+          this.fields[key].value = field;
+          field = this.fields[key];
+        } else {
+          console.error(new Error(
+            `RecordError: A field '${key}' in table '${this.table.name}' was improperly set to '${JSON.stringify(field, null, 2)}'. ` +
+            `Unable to automatically fix. Ignoring and continuing operation...`
+          ));
+          return;
+        }
       }
-      if (this._fields_[key] === undefined)
-        newFields.push(key);
-      else if (this._fields_[key].value !== field.value)
+      if (this._fields_[key] === undefined) {
+        console.error(new Error(
+          `RecordError: A field '${key}' was attempted to be saved to a record in table '${this.table.name}'. ` +
+          `This field did not exist until the save operation. ` +
+          `New fields must be created on the Airtable website as there is no support for this through their API. ` +
+          `Deleting '${key}' from the record and continuing operation...`
+        ));
+        delete this.fields[key];
+        return;
+      } else if (field._changed) {
         changed.push(key);
+      }
     });
-    if (changed.length > 0)
-      console.log('Changed fields: ', JSON.stringify(changed, null, 2));
-    if (newFields.length > 0)
-      console.log('New fields: ', JSON.stringify(newFields, null, 2));
+    if (changed.length > 0 && Record._printRecordChanges) {
+      console.log('Changed fields:');
+      console.log(JSON.stringify(changed.map((key) => {
+        return {
+          key: key,
+          originalValue: this.fields[key]._originalValue,
+          newValue: this.fields[key]._saveValue
+        }
+      }), null, 2));
+    }
+    let remainingPromises = 0;
+    const saveError = (reject, error, ...args) => {
+      remainingPromises--;
+      if (typeof error.response !== 'undefined') {
+        if (error.response.status === 429) {
+          // it'll just return because a 429 error references the API Request Limit being exceeded.
+          // the then/success and catch/fail methods will still work because the request is scheduled to re-run automatically
+          // after a cooldown.
+          return;
+        }
+      }
+      Object.entries(this.fields).forEach(([key, field]) => {
+        // skip over LinkToAnotherRecords because their save handlers will also do this,
+        // provided deepUpdate was set to true. Their save handlers are on seperate requests
+        // so failing here shouldn't effect them.
+        if (!(field instanceof LinkToAnotherRecord) && field.value !== field._originalValue)
+          field.value = field._originalValue; // reset fields on an error
+      });
+      reject(error, ...args);
+    };
+    if (deepUpdate === true) {
+      const cache = { [this.id]: true };
+      const searchFields = (record) => {
+        Object.entries(this.fields).forEach(([key, field]) => {
+          if (field instanceof LinkToAnotherRecord) {
+            const records = field.isMulti ? field.value : [field.value];
+            records.forEach((record) => {
+              if (!(record instanceof Record))
+                return;
+              if (cache[record.id] !== true) {
+                cache[record.id] = true;
+                remainingPromises++;
+                record.save(false)
+                  .then(() => remainingPromises--)
+                  .catch((...args) => saveError(reject, ...args));
+              }
+            });
+          }
+        })
+      };
+      searchFields(this);
+    }
+    const waitForPromises = (resolve) => {
+      if (remainingPromises > 0)
+        setTimeout(() => waitForPromises(resolve), 250);
+      else
+        resolve(this);
+    }
+    // this will trigger if they saved but didn't make any changes. If they didn't do .save(false)
+    // then it will wait for any linked records to save before resolving.
+    if (changed.length === 0)
+      return new Promise(resolve => waitForPromises(resolve));
     return new Promise((resolve, reject) => {
       this.table._airtable.sendRequest(new Request(
         Request.types.patch,
@@ -171,29 +303,25 @@ class Record {
           appendID: this.id,
           data: {
             fields: changed.reduce((obj, item) => {
-              obj[this.fields[item].name] = this.fields[item].value;
+              obj[this.fields[item].name] = this.fields[item]._saveValue;
               return obj;
             }, {})
           }
         },
         (res) => {
-          this.fields = ['change fields', this.fields];
-          resolve(this);
+          Object.entries(this.fields).forEach(([key, field]) => {
+            field._originalValue = field._saveValue;
+            this._fields = this.fields;
+          });
+          waitForPromises(resolve);
         },
-        (...args) => reject(...args)
+        (...args) => saveError(reject, ...args)
       ));
     });
   }
 
   dangerouslyReplace() {
 
-  }
-
-  _checkField(key) {
-    if (this._blacklist_.indexOf(key) >= 0) {
-      throw new Error(`FieldError: Oops! Looks like you managed to pick the same name as an Object that's being used in the Record class. Please pick a name other than '${key}'.`)
-    }
-    return true;
   }
 
   _copyFields(fields) {
@@ -204,14 +332,65 @@ class Record {
     return fieldsCopy;
   }
 
-  _configureBlacklist() {
-    this._blacklistVariables_ = [
+  stringify(replacer, space) {
+    // I don't want to toString() every value
+    // because I don't want to return numbers as strings.
+    // shouldToString is used to indentify fields that should be
+    // printed a certain way such as Currency with the specified
+    // symbol or Dates using the specified formatting.
+    const shouldToString = (field) => {
+      if (field instanceof Field) {
+        switch (field.constructor) {
+          case CreatedTime:
+          case DateField:
+          case Currency:
+          case Percent:
+            return true;
+          default:
+            return false;
+        }
+      }
+      return false;
+    };
+    return `${this.table.name} Record ` + JSON.stringify({
+      id: this.id,
+      fields: {
+        ...Object.entries(this.fields).reduce((fields, [key, field]) => {
+          let value = field.value;
+          if (value instanceof Record)
+            value = `Record [${value.table.name} : ${value.id}]`;
+          if (shouldToString(field))
+            value = field.toString(false);
+          if (Array.isArray(value))
+            value = value.map((value) => {
+              if (value instanceof Record)
+                return `Record [${value.table.name} : ${value.id} : ${shouldToString(value.getPrimaryField()) ? value.getPrimaryField().toString(false) : value.primaryField}]`;
+              else
+                return value;
+            });
+            fields[key] = value === undefined ? null : value
+          return fields;
+        }, {})
+      },
+      createdTime: this.createdTime.toString(false)
+    }, replacer, space);
+  }
+
+  static _checkField(key) {
+    if (Record._blacklist_.indexOf(key) >= 0) {
+      throw new Error(`FieldError: Oops! Looks like you managed to pick the same name as an Object that's being used in the Record class. Please pick a name other than '${key}'.`)
+    }
+    return true;
+  }
+
+  static _configureBlacklist() {
+    Record._blacklistVariables_ = [
       '_cache_',
       '__fields__',
       '_fields',
       '_table'
     ];
-    this._blacklistVariablesNoWrite_ = [
+    Record._blacklistVariablesNoWrite_ = [
       '_blacklist_',
       '_blacklistVariables_',
       '_blacklistVariablesNoWrite_',
@@ -220,80 +399,76 @@ class Record {
       '_createdTime',
       '_id',
     ];
-    this._blacklistGettersSetters_ = [
+    Record._blacklistGettersSetters_ = [
       '_fields_',
+      '_printRecordChanges',
       'createdTime',
       'fields',
       'id',
+      'primaryField',
       'table'
     ];
-    this._blacklistFunctions_ = [
-      'getField',
+    Record._blacklistFunctions_ = [
+      'getFieldByName',
+      'getFieldByKey',
+      'getPrimaryField',
       'has',
+      'fget',
+      'fgetk',
       'get',
       'put',
+      'hask',
+      'getk',
+      'putk',
       'save',
       'update',
       'dangerouslyReplace',
       '_copyFields'
     ];
 
-    this._blacklist_ = []
-      .concat(this._blacklistVariables_)
-      .concat(this._blacklistVariablesNoWrite_)
-      .concat(this._blacklistGettersSetters_)
-      .concat(this._blacklistFunctions_);
+    Record._blacklist_ = []
+      .concat(Record._blacklistVariables_)
+      .concat(Record._blacklistVariablesNoWrite_)
+      .concat(Record._blacklistGettersSetters_)
+      .concat(Record._blacklistFunctions_);
 
-    this._blacklistVariables_.forEach((key) => {
-      Object.defineProperty(this, key, {
-        value: this[key],
+    Record._blacklistVariables_.forEach((key) => {
+      Object.defineProperty(Record, key, {
+        value: Record[key],
         enumerable: false,
         configureable: false,
         writable: true
-      })
+      });
     });
 
-    this._blacklistVariablesNoWrite_.forEach((key) => {
-      Object.defineProperty(this, key, {
-        value: this[key],
+    Record._blacklistVariablesNoWrite_.forEach((key) => {
+      Object.defineProperty(Record, key, {
+        value: Record[key],
         enumerable: false,
         configureable: false,
         writable: false
-      })
+      });
     });
 
-    this._blacklistFunctions_.forEach((key) => {
-      Object.defineProperty(this, key, {
-        value: this[key],
+    Record._blacklistFunctions_.forEach((key) => {
+      Object.defineProperty(Record, key, {
+        value: Record[key],
         enumerable: false,
         configureable: false,
         writable: false
-      })
+      });
     });
-  }
 
-  stringify(replacer, space) {
-    return JSON.stringify({
-      id: this.id,
-      fields: {
-        ...Object.entries(this.fields).reduce((fields, [key, field]) => {
-          let value = field.value;
-          if (value instanceof Record)
-            value = `Record [${value.table.name} : ${value.id}]`;
-          if (Array.isArray(value))
-            value = value.map((value) => {
-              if (value instanceof Record)
-                return `Record [${value.table.name} : ${value.id}]`;
-              else
-                return value;
-            });
-            fields[key] = value === undefined ? null : value
-          return fields;
-        }, {})
-      },
-      createdTime: this.createdTime
-    }, replacer, space);
+    Object.defineProperty(Record, '_blacklistConfigured', {
+      value: true,
+      enumerable: false,
+      configureable: false,
+      writable: false
+    });
   }
 }
+
+if (Record._blacklistConfigured !== true)
+  Record._configureBlacklist();
 
 module.exports = Record;

@@ -1,23 +1,7 @@
 TODO
 
-Record.save() should look in linked records and save those as well
-Record.save() should revent changes on failed save by requesting the record.
-
-in Table.query() we should limit linked requests to 100 items
-
 fill out all the field classes
 
-handle airtable request errors
-
-if we get 422 (api key request limit exceeded) error, tell the Airtable object for that key to wait 32 seconds
+write query functions (find where filter exec)
 
 do documentation on everything
-
-create RecordArray
-  class RecordArray extends Array{
-    hasNextPage(){}
-    nextPage(){return Promise}
-    saveAll(){return Promise}
-  }
-
-make this a node module

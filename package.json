@@ -2,7 +2,7 @@
   "name": "airtable",
   "version": "0.0.1",
   "description": "Hook for Airtable",
-  "main": "index.js",
+  "main": "Airtable.js",
   "author": "Jourdan Clark",
   "dependencies": {
     "axios": "^0.17.1"
