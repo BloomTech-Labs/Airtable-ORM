@@ -1,0 +1,1405 @@
+
+<!doctype html>
+<html>
+  <head>
+
+    <meta charset="utf-8">
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta property="og:image" content="Airtable-ORM/favicon/android-icon-192x192.png"/>
+    <meta property="og:image:secure_url" content="Airtable-ORM/favicon/android-icon-192x192.png" />
+    <meta property="og:title" content="Airtable ORM"/>
+    <meta property="og:description" content="Welcome to the Airtable ORM by LambdaSchool! This is a wrapper for the Airtable REST API and was inspired by Mongoose. Pretty much everything has been abstracted away to allow you to start interacting with your data with as little setup as possible."/>
+
+    <title>Airtable ORM</title>
+
+    <link rel="shortcut icon" href="Airtable-ORM/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="Airtable-ORM/favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="Airtable-ORM/favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="Airtable-ORM/favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="Airtable-ORM/favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="Airtable-ORM/favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="Airtable-ORM/favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="Airtable-ORM/favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="Airtable-ORM/favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="Airtable-ORM/favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="Airtable-ORM/favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="Airtable-ORM/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="Airtable-ORM/favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="Airtable-ORM/favicon/favicon-16x16.png">
+    <link rel="manifest" href="Airtable-ORM/favicon/manifest.json">
+
+    <style>
+      .highlight table td { padding: 5px; }
+.highlight table pre { margin: 0; }
+.highlight .gh {
+  color: #999999;
+}
+.highlight .sr {
+  color: #f6aa11;
+}
+.highlight .go {
+  color: #888888;
+}
+.highlight .gp {
+  color: #555555;
+}
+.highlight .gs {
+}
+.highlight .gu {
+  color: #aaaaaa;
+}
+.highlight .nb {
+  color: #f6aa11;
+}
+.highlight .cm {
+  color: #75715e;
+}
+.highlight .cp {
+  color: #75715e;
+}
+.highlight .c1 {
+  color: #75715e;
+}
+.highlight .cs {
+  color: #75715e;
+}
+.highlight .c, .highlight .cd {
+  color: #75715e;
+}
+.highlight .err {
+  color: #960050;
+}
+.highlight .gr {
+  color: #960050;
+}
+.highlight .gt {
+  color: #960050;
+}
+.highlight .gd {
+  color: #49483e;
+}
+.highlight .gi {
+  color: #49483e;
+}
+.highlight .ge {
+  color: #49483e;
+}
+.highlight .kc {
+  color: #66d9ef;
+}
+.highlight .kd {
+  color: #66d9ef;
+}
+.highlight .kr {
+  color: #66d9ef;
+}
+.highlight .no {
+  color: #66d9ef;
+}
+.highlight .kt {
+  color: #66d9ef;
+}
+.highlight .mf {
+  color: #ae81ff;
+}
+.highlight .mh {
+  color: #ae81ff;
+}
+.highlight .il {
+  color: #ae81ff;
+}
+.highlight .mi {
+  color: #ae81ff;
+}
+.highlight .mo {
+  color: #ae81ff;
+}
+.highlight .m, .highlight .mb, .highlight .mx {
+  color: #ae81ff;
+}
+.highlight .sc {
+  color: #ae81ff;
+}
+.highlight .se {
+  color: #ae81ff;
+}
+.highlight .ss {
+  color: #ae81ff;
+}
+.highlight .sd {
+  color: #e6db74;
+}
+.highlight .s2 {
+  color: #e6db74;
+}
+.highlight .sb {
+  color: #e6db74;
+}
+.highlight .sh {
+  color: #e6db74;
+}
+.highlight .si {
+  color: #e6db74;
+}
+.highlight .sx {
+  color: #e6db74;
+}
+.highlight .s1 {
+  color: #e6db74;
+}
+.highlight .s {
+  color: #e6db74;
+}
+.highlight .na {
+  color: #a6e22e;
+}
+.highlight .nc {
+  color: #a6e22e;
+}
+.highlight .nd {
+  color: #a6e22e;
+}
+.highlight .ne {
+  color: #a6e22e;
+}
+.highlight .nf {
+  color: #a6e22e;
+}
+.highlight .vc {
+  color: #ffffff;
+}
+.highlight .nn {
+  color: #ffffff;
+}
+.highlight .nl {
+  color: #ffffff;
+}
+.highlight .ni {
+  color: #ffffff;
+}
+.highlight .bp {
+  color: #ffffff;
+}
+.highlight .vg {
+  color: #ffffff;
+}
+.highlight .vi {
+  color: #ffffff;
+}
+.highlight .nv {
+  color: #ffffff;
+}
+.highlight .w {
+  color: #ffffff;
+}
+.highlight {
+  color: #ffffff;
+}
+.highlight .n, .highlight .py, .highlight .nx {
+  color: #ffffff;
+}
+.highlight .ow {
+  color: #f92672;
+}
+.highlight .nt {
+  color: #f92672;
+}
+.highlight .k, .highlight .kv {
+  color: #f92672;
+}
+.highlight .kn {
+  color: #f92672;
+}
+.highlight .kp {
+  color: #f92672;
+}
+.highlight .o {
+  color: #f92672;
+}
+    </style>
+    <link href="Airtable-ORM/stylesheets/screen.css" rel="stylesheet" media="screen" />
+    <link href="Airtable-ORM/stylesheets/print.css" rel="stylesheet" media="print" />
+      <script src="Airtable-ORM/javascripts/all.js"></script>
+  </head>
+
+  <body class="index" data-languages="[]">
+    <a href="#" id="nav-button">
+      <span>
+        MENU
+        <img src="Airtable-ORM/images/navbar.png" alt="Navbar" />
+      </span>
+    </a>
+    <div class="toc-wrapper">
+      <img src="Airtable-ORM/images/logo.png" class="logo" alt="Logo" />
+        <div class="search">
+          <input type="text" class="search" id="input-search" placeholder="Search">
+        </div>
+        <ul class="search-results"></ul>
+      <div id="toc" class="toc-list-h1">
+          <li>
+            <a href="#introduction" class="toc-h1 toc-link" data-title="introduction">Introduction </a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#installation" class="toc-h2 toc-link" data-title="installation">Installation </a>
+                  </li>
+                  <li>
+                    <a href="#getting-started" class="toc-h2 toc-link" data-title="getting-started">Getting Started </a>
+                  </li>
+              </ul>
+          </li>
+          <li>
+            <a href="#objects" class="toc-h1 toc-link" data-title="objects">Objects </a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#airtable" class="toc-h2 toc-link" data-title="airtable">Airtable </a>
+                  </li>
+                  <li>
+                    <a href="#field" class="toc-h2 toc-link" data-title="field">Field </a>
+                  </li>
+                  <li>
+                    <a href="#query" class="toc-h2 toc-link" data-title="query">Query </a>
+                  </li>
+                  <li>
+                    <a href="#record" class="toc-h2 toc-link" data-title="record">Record </a>
+                  </li>
+                  <li>
+                    <a href="#recordarray" class="toc-h2 toc-link" data-title="recordarray">RecordArray </a>
+                  </li>
+                  <li>
+                    <a href="#request" class="toc-h2 toc-link" data-title="request">Request </a>
+                  </li>
+                  <li>
+                    <a href="#table" class="toc-h2 toc-link" data-title="table">Table </a>
+                  </li>
+              </ul>
+          </li>
+          <li>
+            <a href="#field-types" class="toc-h1 toc-link" data-title="field-types">Field Types </a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#attachment" class="toc-h2 toc-link" data-title="attachment">Attachment </a>
+                  </li>
+                  <li>
+                    <a href="#autonumber" class="toc-h2 toc-link" data-title="autonumber">AutoNumber </a>
+                  </li>
+                  <li>
+                    <a href="#barcode" class="toc-h2 toc-link" data-title="barcode">Barcode </a>
+                  </li>
+                  <li>
+                    <a href="#checkbox" class="toc-h2 toc-link" data-title="checkbox">Checkbox </a>
+                  </li>
+                  <li>
+                    <a href="#collaborator" class="toc-h2 toc-link" data-title="collaborator">Collaborator </a>
+                  </li>
+                  <li>
+                    <a href="#count" class="toc-h2 toc-link" data-title="count">Count </a>
+                  </li>
+                  <li>
+                    <a href="#createdtime" class="toc-h2 toc-link" data-title="createdtime">CreatedTime </a>
+                  </li>
+                  <li>
+                    <a href="#currency" class="toc-h2 toc-link" data-title="currency">Currency </a>
+                  </li>
+                  <li>
+                    <a href="#datefield" class="toc-h2 toc-link" data-title="datefield">DateField </a>
+                  </li>
+                  <li>
+                    <a href="#email" class="toc-h2 toc-link" data-title="email">Email </a>
+                  </li>
+                  <li>
+                    <a href="#formula" class="toc-h2 toc-link" data-title="formula">Formula </a>
+                  </li>
+                  <li>
+                    <a href="#linktoanotherrecord" class="toc-h2 toc-link" data-title="linktoanotherrecord">LinkToAnotherRecord </a>
+                  </li>
+                  <li>
+                    <a href="#longtext" class="toc-h2 toc-link" data-title="longtext">LongText </a>
+                  </li>
+                  <li>
+                    <a href="#lookup" class="toc-h2 toc-link" data-title="lookup">Lookup </a>
+                  </li>
+                  <li>
+                    <a href="#multipleselect" class="toc-h2 toc-link" data-title="multipleselect">MultipleSelect </a>
+                  </li>
+                  <li>
+                    <a href="#numberfield" class="toc-h2 toc-link" data-title="numberfield">NumberField </a>
+                  </li>
+                  <li>
+                    <a href="#percent" class="toc-h2 toc-link" data-title="percent">Percent </a>
+                  </li>
+                  <li>
+                    <a href="#phonenumber" class="toc-h2 toc-link" data-title="phonenumber">PhoneNumber </a>
+                  </li>
+                  <li>
+                    <a href="#rating" class="toc-h2 toc-link" data-title="rating">Rating </a>
+                  </li>
+                  <li>
+                    <a href="#rollup" class="toc-h2 toc-link" data-title="rollup">Rollup </a>
+                  </li>
+                  <li>
+                    <a href="#singlelinetext" class="toc-h2 toc-link" data-title="singlelinetext">SingleLineText </a>
+                  </li>
+                  <li>
+                    <a href="#singleselect" class="toc-h2 toc-link" data-title="singleselect">SingleSelect </a>
+                  </li>
+                  <li>
+                    <a href="#unknownfield" class="toc-h2 toc-link" data-title="unknownfield">UnknownField </a>
+                  </li>
+                  <li>
+                    <a href="#url" class="toc-h2 toc-link" data-title="url">URL </a>
+                  </li>
+              </ul>
+          </li>
+          <li>
+            <a href="#strict" class="toc-h1 toc-link" data-title="strict">Strict </a>
+          </li>
+          <li>
+            <a href="#examples" class="toc-h1 toc-link" data-title="examples">Examples </a>
+          </li>
+      </div>
+        <ul class="toc-footer">
+            <li><a href='https://github.com/Lambda-School-Labs/Airtable-ORM'>View API</a></li>
+        </ul>
+    </div>
+    <div class="page-wrapper">
+      <div class="dark-box"></div>
+      <div class="content">
+        <h1 id='introduction'>Introduction <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h1>
+<aside class="notice">
+To differentiate between Airtable.com and Objects/Airtable, Airtable.com refers and links to the website while Airtable refers and links to the Object 'Airtable' used by this API.
+</aside>
+
+<p>Welcome to the Airtable ORM by <a href="https://lambdaschool.com">LambdaSchool</a>! This is a wrapper for the Airtable REST API and was inspired by Mongoose. Pretty much everything has been abstracted away to allow you to start interacting with your data with as little setup as possible.</p>
+<h2 id='installation'>Installation <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<p><code>npm install Lambda-School-Labs/Airtable-ORM</code></p>
+<h2 id='getting-started'>Getting Started <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<blockquote>
+<p>Getting Started</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="kr">const</span> <span class="nx">Airtable</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'Airtable'</span><span class="p">);</span>
+<span class="kr">const</span> <span class="nx">security</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'./security.json'</span><span class="p">);</span>
+
+<span class="kr">const</span> <span class="nx">key</span> <span class="o">=</span> <span class="nx">security</span><span class="p">.</span><span class="nx">apiKey</span><span class="p">;</span>
+<span class="kr">const</span> <span class="nx">baseID</span> <span class="o">=</span> <span class="s1">'appj0mDe8gFv0QQy8'</span><span class="p">;</span>
+<span class="kr">const</span> <span class="nx">tableName</span> <span class="o">=</span> <span class="s1">'Test'</span><span class="p">;</span>
+
+<span class="kr">const</span> <span class="nx">airtable</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Airtable</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
+</code></pre>
+<p>You&#39;ll need to get your API Key from <a href="https://airtable.com">Airtable.com</a>. To find it, go to your <a href="https://airtable.com/account">account</a> and scroll down to generate an API Key.</p>
+
+<p>You&#39;ll then need to get the ID of the Base that you want to work in. To find it, go into your Base, click the info button on the top right (a question mark icon), and click API documentation. Once you are there, copy the ID from the URL. You&#39;ll see something like <code>https://airtable.com/appj0mDe8gFv0QQy8/api/docs#curl/introduction</code> where <code>appj0mDe8gFv0QQy8</code> is your Base ID.</p>
+
+<p>You may want to store these values in a JSON file if you are planning on using multiple files to set up your <a href="#table">Table</a> definitions.</p>
+
+<p>In this example, we start by importing <a href="#airtable">Airtable</a> and security.json which contains our API Key. We then create variables to hold our API Key, the Base ID, and the name of the Table (this has to be the exact same as what you named the table on Airtable.com).</p>
+
+<p>Next we initialize Airtable, giving it our key. You can also provide it with a <code>limit</code> and a <code>queueCap</code> in that order. Refer to Airtable to learn more about what those parameters do.</p>
+
+<p>We will then define our Table, storing it in a variable for later use. In most cases you will likely want to do <code>module.exports = Test</code>, although you can also use <code>Airtable.getTable(apiKey, tableName, baseID)</code> or other variants mentioned in Airtable to import your Table into other files.</p>
+
+<p>We will define our Table by providing airtable.defineTable() with the name of the Table as it is on Airtable.com, the Base ID, and then finally an object representing our Table Definition.</p>
+
+<div><!-- spacing --></div>
+<h3 id='table-definitions'>Table Definitions <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h3>
+<blockquote>
+<p>Table Definitions</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="kr">const</span> <span class="nx">Test</span> <span class="o">=</span> <span class="nx">airtable</span><span class="p">.</span><span class="nx">defineTable</span><span class="p">(</span><span class="nx">tableName</span><span class="p">,</span> <span class="nx">baseID</span><span class="p">,</span> <span class="p">{</span>
+  <span class="na">email</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">name</span><span class="p">:</span> <span class="s1">'Email'</span><span class="p">,</span>
+    <span class="na">type</span><span class="p">:</span> <span class="nx">Airtable</span><span class="p">.</span><span class="nx">FieldTypes</span><span class="p">.</span><span class="nx">Email</span><span class="p">,</span>
+    <span class="na">primary</span><span class="p">:</span> <span class="kc">true</span>
+  <span class="p">},</span>
+  <span class="na">age</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">name</span><span class="p">:</span> <span class="s1">'Age'</span><span class="p">,</span>
+    <span class="na">type</span><span class="p">:</span> <span class="nx">Airtable</span><span class="p">.</span><span class="nx">FieldTypes</span><span class="p">.</span><span class="nb">Number</span><span class="p">,</span>
+    <span class="na">format</span><span class="p">:</span> <span class="s1">'Integer'</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+</code></pre>
+<blockquote>
+<p>Note that you do not need to initialize Airtable. You can either do it like the example or you can simply do:</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="kr">const</span> <span class="nx">Table</span> <span class="o">=</span> <span class="nx">Airtable</span><span class="p">.</span><span class="nx">defineTable</span><span class="p">(</span><span class="nx">tableName</span><span class="p">,</span> <span class="nx">apiKey</span><span class="p">,</span> <span class="nx">baseID</span><span class="p">,</span> <span class="nx">tableDefinition</span><span class="p">)</span>
+</code></pre>
+<p><a href="https://airtable.com">Airtable.com</a> does not provide a way for developers to retrieve information about <a href="#field">Field</a> configurations. To get around this, you must tell the API how you want your Fields to operate.</p>
+
+<p>To keep this introduction short, we are only going to go over two <a href="#field-types">Field Types</a>. This should provide enough information to get an idea of how this works, although more in-depth <a href="#examples">Examples</a> are provided.</p>
+
+<p>The first Field we define is <code>email</code>. On Airtable.com this Field is our primary key and as such, we have <code>primary</code> set to true. By doing this we can later reference this Field&#39;s value by doing <code>record.primaryField</code>.</p>
+
+<p>All Fields require a <code>name</code> and <code>type</code>. The <code>name</code> of the Field must be the exact same as it is on Airtable.com. <code>type</code> is a Field Type which tells the API how to interact with this data as it comes in. This is necessary as Airtable.com does not send empty fields (including empty Strings, <code>false</code> Booleans, etc) and the API needs to know what format to send the data back in, in order to avoid errors that result in the entire save operation being rejected.</p>
+
+<p>In <code>age</code> we also define the <code>format</code> for this <a href="#number-field">NumberField</a>. <code>format</code> is one of many configurations available for NumberField. By setting this Field&#39;s <code>format</code> to <code>&#39;Integer&#39;</code> we tell the API that it should ensure that Numbers we provide it are Integers. The default behavior for this Field is to floor any Floats it receives. It can also accept Numbers that come in as Strings. ie, <code>record.age = &#39;13.24&#39;</code> will be automatically corrected to <code>record.age = 13</code>, except for in <a href="#strict">Strict</a>. It&#39;s important to note that the keys in your Table Definition can not be the same as propeties of the Record Object. Reference <a href="#record">Record</a> to view blacklisted keys.</p>
+
+<aside class="notice">
+If you do not change any settings when you create a field on Airtable.com, you do not need to define any settings here. Every Field configuration has the same defaults as Airtable.com. You will still need to provide 'name', 'type', and if the field is the primary key, you'll need to provide 'primary'
+</aside>
+
+<p>To summarize, a Table Definition is a key-value Object of Field Definitions. Every Field Definition will at least contain a <code>name</code> and a <code>type</code>. If the Field is the primary key, it will also contain <code>primary: true</code>. Most Field Type have many configurations and you should ensure that they have been properly defined. Not doing so puts you at a higher risk of getting errors back from Airtable.com rather than having the API catch them before a save request is sent. It&#39;s important to clean your data before setting the value of a Field, however all Fields try to correct it to avoid errors and inconsistent data. If these corrections will not work for you, you can run the Field in Strict.</p>
+
+<div><!-- spacing --></div>
+<h3 id='creating-records'>Creating Records <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h3>
+<blockquote>
+<p>Creating Records</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="kr">const</span> <span class="nx">newRecord</span> <span class="o">=</span> <span class="nx">Test</span><span class="p">.</span><span class="nx">getBlankRecord</span><span class="p">();</span>
+<span class="nx">newRecord</span><span class="p">.</span><span class="nx">primaryField</span> <span class="o">=</span> <span class="s1">'bob@gmail.com'</span><span class="p">;</span>
+<span class="nx">newRecord</span><span class="p">.</span><span class="nx">age</span> <span class="o">=</span> <span class="mi">85</span><span class="p">;</span>
+<span class="nx">newRecord</span><span class="p">.</span><span class="nx">create</span><span class="p">().</span><span class="nx">then</span><span class="p">((</span><span class="nx">record</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">record</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
+<span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="nx">error</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">toString</span><span class="p">()));</span>
+</code></pre><pre class="highlight javascript tab-javascript"><code><span class="kr">const</span> <span class="nx">newRecord</span> <span class="o">=</span> <span class="nx">Test</span><span class="p">.</span><span class="nx">getBlankRecord</span><span class="p">();</span>
+<span class="nx">newRecord</span><span class="p">.</span><span class="nx">email</span> <span class="o">=</span> <span class="s1">'bob@gmail.com'</span><span class="p">;</span>
+<span class="nx">newRecord</span><span class="p">.</span><span class="nx">age</span> <span class="o">=</span> <span class="mi">85</span><span class="p">;</span>
+<span class="nx">Test</span><span class="p">.</span><span class="nx">createRecord</span><span class="p">(</span><span class="nx">newRecord</span><span class="p">).</span><span class="nx">then</span><span class="p">((</span><span class="nx">record</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">record</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
+<span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="nx">error</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">toString</span><span class="p">()));</span>
+</code></pre><pre class="highlight javascript tab-javascript"><code><span class="nx">Test</span><span class="p">.</span><span class="nx">createRecord</span><span class="p">().</span><span class="nx">then</span><span class="p">((</span><span class="nx">record</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">record</span><span class="p">.</span><span class="nx">email</span> <span class="o">=</span> <span class="s1">'bob@gmail.com'</span><span class="p">;</span>
+  <span class="nx">record</span><span class="p">.</span><span class="nx">age</span> <span class="o">=</span> <span class="mi">85</span><span class="p">;</span>
+  <span class="nx">record</span><span class="p">.</span><span class="nx">save</span><span class="p">().</span><span class="nx">then</span><span class="p">((</span><span class="nx">record</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">record</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
+  <span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="nx">error</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">toString</span><span class="p">()));</span>
+<span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="nx">error</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">toString</span><span class="p">()));</span>
+</code></pre><pre class="highlight javascript tab-javascript"><code><span class="nx">Test</span><span class="p">.</span><span class="nx">createRecord</span><span class="p">({</span> <span class="na">email</span><span class="p">:</span> <span class="s1">'bob@gmail.com'</span><span class="p">,</span> <span class="na">age</span><span class="p">:</span> <span class="mi">85</span> <span class="p">}).</span><span class="nx">then</span><span class="p">((</span><span class="nx">record</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">record</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
+<span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="nx">error</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">toString</span><span class="p">()));</span>
+</code></pre>
+<blockquote>
+<p>Output of all the above statements is the same:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bob@gmail.com"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"age"</span><span class="p">:</span><span class="w"> </span><span class="mi">85</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>There are several ways you can create a <a href="#record">Record</a>. You can create one by calling <a href="#table-getblankrecord">Table.getBlankRecord()</a> which gives you a Record Object where all of the Fields are blank. Once you fill in the data that you want to store in your new (not yet created) Record, you can call <a href="#record-create">Record.create()</a>. Record.create() returns a Promise which resolve a Record Object, or <code>undefined</code> if no Record was returned from <a href="https://airtable.com">Airtable.com</a>.</p>
+
+<p>Another option would be to just call <a href="#table-createrecord">Table.createRecord(newRecord)</a>. Record.create() just calls Table.createRecord() so both methods are equivalent. If you call Table.createRecord without any arguments, it will return a Promise which resolves a created blank Record. This function might be the easiest/cleanest to use in cases where you want to create a Record where you don&#39;t necessarily need to add a bunch of data to it right away. As you can see in one of the examples, you can give it a key-value Object telling it what values you want it to set your Fields to. It&#39;s important to note, however, that you must provide it with the keys from your Table Definition or it will throw an error because it is unable to find what type of <a href="#field">Field</a> the offending value should go in.</p>
+
+<div><!-- spacing --></div>
+<h3 id='queries'>Queries <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h3>
+<blockquote>
+<p>Queries</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">Test</span><span class="p">.</span><span class="nx">query</span><span class="p">().</span><span class="nx">then</span><span class="p">((</span><span class="nx">records</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">records</span><span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">record</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">record</span><span class="p">.</span><span class="nx">age</span><span class="o">++</span><span class="p">;</span>
+    <span class="nx">record</span><span class="p">.</span><span class="nx">save</span><span class="p">().</span><span class="nx">then</span><span class="p">((</span><span class="nx">record</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">record</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
+    <span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="nx">error</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">toString</span><span class="p">()));</span>
+  <span class="p">});</span>
+<span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="nx">error</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">toString</span><span class="p">()));</span>
+
+</code></pre>
+<blockquote>
+<p>Output:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bob@gmail.com"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"age"</span><span class="p">:</span><span class="w"> </span><span class="mi">86</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<aside class="notice">
+As of right now, the Query Object has not been abstracted. You can pass in an Object containing the properties defined in the Airtable Rest API for <code>List records</code>. ie, <code>{ fields, filterByFormula, maxRecords, pageSize, sort, view, offset }</code>.
+</aside>
+
+<p>In the example, our query returned something we called <code>records</code>. This is a <a href="#recordarray">RecordArray</a> and will never be <code>null</code> or <code>undefined</code>. A RecordArray is simply an Array of Records with a some added functionality. You should definitely reference its docs before getting started on your project.</p>
+
+<p><code>record</code> is a <a href="#record">Record</a> Object and if you notice, we can access <code>age</code> from our <a href="#table">Table</a> Definition by doing <code>record.age</code>. Behind the scenes, <code>record.age</code> is the same as doing <code>record.fields.age.value</code>. This is important to note as, while you will interact will most <a href="#field-types">Field Types</a> by only needing to get and set their value, some Field Types have useful functions to help you better interact with them. To get the actual <a href="#field">Field</a> Object, you can do <code>record.fields.age</code> or <code>record.fget(&#39;Age&#39;)</code> or <code>record.fgetk(&#39;age&#39;)</code>.</p>
+
+<p>Finally, after modifying <code>age</code>, we call <code>record.save()</code> which figures out what Fields changed and sends a <code>PATCH</code> <a href="#request">Request</a> to <a href="https://airtable.com">Airtable.com</a>, only containing modified Fields. If none of the Fields on a Record were modified, no Request is sent. If Airtable.com sends back an error, you may access the data through <code>error.response.data</code> where <code>error</code> refers to the <code>error</code> in our <code>.save().catch(error)</code>.</p>
+<h1 id='objects'>Objects <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h1><h2 id='airtable'>Airtable <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
+<h2 id='field'>Field <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
+<h2 id='query'>Query <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<aside class="warning">
+  This has not been implemented yet.
+</aside>
+<h2 id='record'>Record <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
+<h2 id='recordarray'>RecordArray <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
+<h2 id='request'>Request <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
+<h2 id='table'>Table <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
+<h1 id='field-types'>Field Types <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h1><h2 id='attachment'>Attachment <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<ul>
+<li>Attachment
+
+<ul>
+<li><a href="#field">Field</a></li>
+</ul></li>
+</ul>
+
+<p>Attachments allow you to add images, documents, or other files which can then be viewed or downloaded.</p>
+
+<table><thead>
+<tr>
+<th>Functions</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><a href="#attachment-constructor">constructor</a></td>
+</tr>
+<tr>
+<td><a href="#attachment-get-value">get value</a></td>
+</tr>
+<tr>
+<td><a href="#attachment-set-value">set value</a></td>
+</tr>
+</tbody></table>
+<h3 id='attachment-constructor'>Attachment.constructor <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h3>
+<aside class="warning">
+  Note that you may only remove Attachments. They cannot be added and
+  data within an Attachment Object cannot be changed. Adding Attachments
+  (even if they are valid and pulled from another record) will throw a
+  422 Error when the Record fails to save.
+</aside>
+
+<blockquote>
+<p>Attachment.constructor</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code>  <span class="kr">const</span> <span class="nx">attachment</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Attachment</span><span class="p">(</span><span class="s2">"Name"</span><span class="p">,</span> <span class="p">[]);</span>
+</code></pre>
+<p>Initializes a new Attachment Field.</p>
+
+<aside class="parameters">
+  <p class="title"><span>Parameters</span></p>
+  <p class="parameter">
+    <span class="name">name</span>
+    <span class="type">String</span>
+    <span class="description">
+      The name of the Field as it is on <a href="https://airtable.com">Airtable.com</a>.
+    </span>
+  </p>
+  <p class="parameter">
+    <span class="name">value</span>
+    <span class="type">Array</span>
+    <span class="optional"></span>
+    <span class="description">
+      Should be an Array of key-value Objects representing an Attachment.
+    </span>
+  </p>
+</aside>
+<h3 id='attachment-get-value'>Attachment.get value <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h3>
+<blockquote>
+<p>Attachment.get value</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">attachment</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
+</code></pre>
+<blockquote>
+<p>Output:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">[</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"attK0FiU1zdSmwsYC"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://dl.airtable.com/i9vRAoM9SYOC7BZCou2Z_008-FUNNY-CAT-MEME.jpg"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"filename"</span><span class="p">:</span><span class="w"> </span><span class="s2">"008-FUNNY-CAT-MEME.jpg"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"size"</span><span class="p">:</span><span class="w"> </span><span class="mi">196879</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"image/jpeg"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"thumbnails"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"small"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://dl.airtable.com/lGaVCc7QCKmDYDm8qjqL_small_008-FUNNY-CAT-MEME.jpg"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"width"</span><span class="p">:</span><span class="w"> </span><span class="mi">31</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"height"</span><span class="p">:</span><span class="w"> </span><span class="mi">36</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="s2">"large"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://dl.airtable.com/m2v43HvTHOMg3k7fj61s_large_008-FUNNY-CAT-MEME.jpg"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"width"</span><span class="p">:</span><span class="w"> </span><span class="mi">512</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"height"</span><span class="p">:</span><span class="w"> </span><span class="mi">595</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span></code></pre>
+<p>Returns the value of this Field in an immutable Array.</p>
+
+<aside class="parameters">
+  <p class="title"><span>Return Value</span></p>
+  <p class="parameter">
+    <span class="type">Array</span>
+    <span class="tag">immutable</span>
+    <span class="description">
+      Either an Array of key-value Objects representing Attachments or an empty Array.
+    </span>
+  </p>
+</aside>
+
+<div><!-- spacing --></div>
+<h3 id='attachment-set-value'>Attachment.set value <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h3>
+<blockquote>
+<p>Attachment.set value</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">attachment</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">attachment</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</code></pre>
+<p>Used to set the value of this Field. Setting this Field to <code>null</code> or <code>undefined</code> will result in the Field being set to an empty Array.</p>
+
+<aside class="parameters">
+  <p class="title"><span>Parameters</span></p>
+  <p class="parameter">
+    <span class="name">value</span>
+    <span class="type">Array</span>
+    <span class="description">
+      Should be an Array of key-value Objects representing an Attachment.
+    </span>
+  </p>
+</aside>
+<h2 id='autonumber'>AutoNumber <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<ul>
+<li>AutoNumber
+
+<ul>
+<li><a href="#field">Field</a></li>
+</ul></li>
+</ul>
+
+<p>Automatically incremented unique counter for each record.</p>
+
+<table><thead>
+<tr>
+<th>Functions</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><a href="#autonumber-constructor">constructor</a></td>
+</tr>
+<tr>
+<td><a href="#autonumber-get-_changed">get _changed</a></td>
+</tr>
+<tr>
+<td><a href="#autonumber-get-value">get value</a></td>
+</tr>
+<tr>
+<td><a href="#autonumber-set-_changed">set _changed</a></td>
+</tr>
+<tr>
+<td><a href="#autonumber-set-value">set value</a></td>
+</tr>
+</tbody></table>
+<h3 id='autonumber-constructor'>AutoNumber.constructor <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h3>
+<aside class="notice">
+  The value for this field is automatically incremented starting at 1. The value cannot be changed.
+</aside>
+
+<blockquote>
+<p>AutoNumber.constructor</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code>  <span class="kr">const</span> <span class="nx">autoNum</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AutoNumber</span><span class="p">(</span><span class="s2">"Name"</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</code></pre>
+<p>Initializes a new AutoNumber Field.</p>
+
+<aside class="parameters">
+  <p class="title"><span>Parameters</span></p>
+  <p class="parameter">
+    <span class="name">name</span>
+    <span class="type">String</span>
+    <span class="description">
+      The name of the Field as it is on <a href="https://airtable.com">Airtable.com</a>.
+    </span>
+  </p>
+  <p class="parameter">
+    <span class="name">value</span>
+    <span class="type">Integer</span>
+    <span class="optional"></span>
+    <span class="description">
+      Must be an Integer.
+    </span>
+  </p>
+</aside>
+<h3 id='autonumber-get-_changed'>AutoNumber.get _changed <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h3>
+<aside class="notice">
+  This function is used by the API.
+</aside>
+
+<blockquote>
+<p>AutoNumber.get _changed</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">autoNum</span><span class="p">.</span><span class="nx">_changed</span><span class="p">);</span>
+</code></pre>
+<blockquote>
+<p>Output:</p>
+</blockquote>
+<pre class="highlight plaintext"><code>false
+</code></pre>
+<p>A Boolean representing whether or not this Field has changed from its original value.</p>
+
+<aside class="parameters">
+  <p class="title"><span>Return Value</span></p>
+  <p class="parameter">
+    <span class="type">Boolean</span>
+    <span class="description">
+      Will always be false.
+    </span>
+  </p>
+</aside>
+
+<div><!-- spacing --></div>
+<h3 id='autonumber-get-value'>AutoNumber.get value <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h3>
+<blockquote>
+<p>AutoNumber.get value</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">autoNum</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+</code></pre>
+<blockquote>
+<p>Output:</p>
+</blockquote>
+<pre class="highlight plaintext"><code>1
+</code></pre>
+<aside class="parameters">
+  <p class="title"><span>Return Value</span></p>
+  <p class="parameter">
+    <span class="type">Integer</span>
+    <span class="type">null</span>
+    <span class="description">
+      An Integer, or null if the Field is empty.
+    </span>
+  </p>
+</aside>
+
+<div><!-- spacing --></div>
+<h3 id='autonumber-set-_changed'>AutoNumber.set _changed <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h3>
+<aside class="warning">
+  This function cannot be used.
+</aside>
+<h3 id='autonumber-set-value'>AutoNumber.set value <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h3>
+<aside class="warning">
+  The value of this Field cannot be changed.
+</aside>
+<h2 id='barcode'>Barcode <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<ul>
+<li>Barcode
+
+<ul>
+<li><a href="#field">Field</a></li>
+</ul></li>
+</ul>
+
+<p>Use the Airtable iOS or Android app to scan barcodes.</p>
+
+<table><thead>
+<tr>
+<th>Functions</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><a href="#barcode-constructor">constructor</a></td>
+</tr>
+<tr>
+<td><a href="#barcode-get-_changed">get _changed</a></td>
+</tr>
+<tr>
+<td><a href="#barcode-get-_savevalue">get _saveValue</a></td>
+</tr>
+<tr>
+<td><a href="#barcode-get-barcodetext">get barcodeText</a></td>
+</tr>
+<tr>
+<td><a href="#barcode-get-barcodetype">get barcodeType</a></td>
+</tr>
+<tr>
+<td><a href="#barcode-get-value">get value</a></td>
+</tr>
+<tr>
+<td><a href="#barcode-set-_changed">set _changed</a></td>
+</tr>
+<tr>
+<td><a href="#barcode-set-_savevalue">set _saveValue</a></td>
+</tr>
+<tr>
+<td><a href="#barcode-set-barcodetext">set barcodeText</a></td>
+</tr>
+<tr>
+<td><a href="#barcode-set-barcodetype">set barcodeType</a></td>
+</tr>
+<tr>
+<td><a href="#barcode-set-value">set value</a></td>
+</tr>
+</tbody></table>
+<h3 id='barcode-constructor'>Barcode.constructor <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h3>
+<blockquote>
+<p>Barcode.constructor</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code>  <span class="kr">const</span> <span class="nx">barcode</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Barcode</span><span class="p">(</span><span class="s2">"Name"</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">text</span><span class="p">:</span> <span class="s1">'text'</span><span class="p">,</span>
+    <span class="na">type</span><span class="p">:</span> <span class="s1">'code128'</span>
+  <span class="p">});</span>
+</code></pre>
+<p>Initializes a new Barcode Field.</p>
+
+<aside class="parameters">
+  <p class="title"><span>Parameters</span></p>
+  <p class="parameter">
+    <span class="name">name</span>
+    <span class="type">String</span>
+    <span class="description">
+      The name of the Field as it is on <a href="https://airtable.com">Airtable.com</a>.
+    </span>
+  </p>
+  <p class="parameter">
+    <span class="name">value</span>
+    <span class="type">Object</span>
+    <span class="optional"></span>
+    <span class="description">
+      An Object containing <code>text</code> and <code>type</code>.<br>
+      <code>text</code>: (default: <code>""</code>) A String representing what the barcode translates to.<br>
+      <code>type</code>: (default: <code>'code128'</code>) A String which identifies the format of the barcode.
+    </span>
+  </p>
+</aside>
+<h3 id='barcode-get-_changed'>Barcode.get _changed <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h3>
+<blockquote>
+<p>Barcode.get _changed</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">barcode</span><span class="p">.</span><span class="nx">_changed</span><span class="p">);</span>
+</code></pre>
+<blockquote>
+<p>Output:</p>
+</blockquote>
+<pre class="highlight plaintext"><code>false
+</code></pre>
+<aside class="notice">
+  This function is used by the API.
+</aside>
+
+<aside class="parameters">
+  <p class="title"><span>Return Value</span></p>
+  <p class="parameter">
+    <span class="type">Boolean</span>
+    <span class="description">
+      A Boolean representing whether or not this Field has changed from its original value.
+    </span>
+  </p>
+</aside>
+
+<div><!-- spacing --></div>
+<h3 id='barcode-get-_savevalue'>Barcode.get _saveValue <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h3>
+<blockquote>
+<p>Barcode.get _saveValue</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="kr">const</span> <span class="nx">saveValue</span> <span class="o">=</span> <span class="nx">barcode</span><span class="p">.</span><span class="nx">_saveValue</span><span class="p">;</span>
+</code></pre>
+<blockquote>
+<p>saveValue:</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
+  <span class="nl">text</span><span class="p">:</span> <span class="s1">'text'</span><span class="p">,</span>
+  <span class="nx">type</span><span class="p">:</span> <span class="s1">'code128'</span>
+<span class="p">}</span>
+</code></pre>
+<aside class="notice">
+  This function is used by the API.
+</aside>
+
+<p>This function is used by the API to convert the value stored in this field over to a value
+that Airtable.com will accept (if it needs to convert anything).</p>
+
+<aside class="parameters">
+  <p class="title"><span>Return Value</span></p>
+  <p class="parameter">
+    <span class="type">Object</span>
+    <span class="description">
+      If properties in this Field's value have been set to <code>null</code> or <code>undefined</code>, this function will fix the broken properties. It will set <code>text</code> to an empty String and <code>type</code> to <code>'code128'</code> (the format Airtable.com seems to convert all barcodes to).<br>
+      <code>text</code>: (default: <code>""</code>) A String representing what the barcode translates to.<br>
+      <code>type</code>: (default: <code>'code128'</code>) A String which identifies the format of the barcode.
+    </span>
+  </p>
+</aside>
+
+<div><!-- spacing --></div>
+<h3 id='barcode-get-barcodetext'>Barcode.get barcodeText <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h3>
+<blockquote>
+<p>Barcode.get barcodeText</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">barcode</span><span class="p">.</span><span class="nx">barcodeText</span><span class="p">);</span>
+</code></pre>
+<blockquote>
+<p>Output:</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="s1">'text'</span>
+</code></pre>
+<p>This Field will always return a String.</p>
+
+<aside class="parameters">
+  <p class="title"><span>Return Value</span></p>
+  <p class="parameter">
+    <span class="type">String</span>
+    <span class="description">
+      A String representing what the barcode translates to.
+    </span>
+  </p>
+</aside>
+<h3 id='barcode-get-barcodetype'>Barcode.get barcodeType <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h3>
+<blockquote>
+<p>Barcode.get barcodeType</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">barcode</span><span class="p">.</span><span class="nx">barcodeType</span><span class="p">);</span>
+</code></pre>
+<blockquote>
+<p>Output:</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="s1">'code128'</span>
+</code></pre>
+<p>This Field will always return a String.</p>
+
+<aside class="parameters">
+  <p class="title"><span>Return Value</span></p>
+  <p class="parameter">
+    <span class="type">String</span>
+    <span class="description">
+      A String which identifies the format of the barcode.
+    </span>
+  </p>
+</aside>
+<h3 id='barcode-get-value'>Barcode.get value <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h3>
+<blockquote>
+<p>Barcode.get value</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">barcode</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
+</code></pre>
+<blockquote>
+<p>Output:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"text"</span><span class="p">:</span><span class="w"> </span><span class="s2">"text"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"code128"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<aside class="parameters">
+  <p class="title"><span>Return Value</span></p>
+  <p class="parameter">
+    <span class="type">Object</span>
+    <span class="description">
+      An Object with the properties `type` and `text`.<br>
+      <code>text</code>: A String representing what the barcode translates to.<br>
+      <code>type</code>: A String which identifies the format of the barcode.
+    </span>
+  </p>
+</aside>
+
+<div><!-- spacing --></div>
+<h3 id='barcode-set-_changed'>Barcode.set _changed <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h3>
+<aside class="warning">
+  This function cannot be used.
+</aside>
+<h3 id='barcode-set-_savevalue'>Barcode.set _saveValue <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h3>
+<aside class="warning">
+  This function cannot be used.
+</aside>
+<h3 id='barcode-set-barcodetext'>Barcode.set barcodeText <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h3>
+<blockquote>
+<p>Barcode.set barcodeText</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">barcode</span><span class="p">.</span><span class="nx">barcodeText</span> <span class="o">=</span> <span class="s1">'hello'</span><span class="p">;</span>
+</code></pre>
+<aside class="parameters">
+  <p class="title"><span>Parameters</span></p>
+  <p class="parameter">
+    <span class="name">value</span>
+    <span class="type">String</span>
+    <span class="description">
+      (default: <code>""</code>) A String representing what the barcode translates to.
+    </span>
+  </p>
+</aside>
+<h3 id='barcode-set-barcodetype'>Barcode.set barcodeType <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h3>
+<blockquote>
+<p>Barcode.set barcodeType</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">barcode</span><span class="p">.</span><span class="nx">barcodeType</span> <span class="o">=</span> <span class="s1">'hello'</span><span class="p">;</span>
+</code></pre>
+<aside class="parameters">
+  <p class="title"><span>Parameters</span></p>
+  <p class="parameter">
+    <span class="name">value</span>
+    <span class="type">String</span>
+    <span class="description">
+      (default: <code>'code128'</code>) A String which identifies the format of the barcode.
+    </span>
+  </p>
+</aside>
+<h3 id='barcode-set-value'>Barcode.set value <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h3>
+<blockquote>
+<p>Barcode.set value</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">barcode</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="s1">'hello'</span><span class="p">;</span>
+<span class="nx">barcode</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">text</span><span class="p">:</span> <span class="s1">'hello'</span><span class="p">,</span>
+  <span class="na">type</span><span class="p">:</span> <span class="s1">'code128'</span>
+<span class="p">};</span>
+</code></pre>
+<p>A value type of String will set the <code>text</code> property of the barcode. An Object containing the properties <code>text</code> and <code>type</code> will set both values. This function calls <a href="#barcode-set-barcodetext">Barcode.set barcodeText</a> and <a href="#barcode-set-barcodetype">Barcode.set barcodeType</a>. If value is a String and this Field does not have a <code>type</code> set, its <code>type</code> will be set to <code>&#39;code128&#39;</code>.</p>
+
+<aside class="parameters">
+  <p class="title"><span>Parameters</span></p>
+  <p class="parameter">
+    <span class="name">value</span>
+    <span class="type">String</span>
+    <span class="description">
+      A String representing what the barcode translates to.
+    </span>
+  </p>
+  <p class="parameter">
+    <span class="name">value</span>
+    <span class="type">Object</span>
+    <span class="description">
+      An Object with the properties `type` and `text`.<br>
+      <code>text</code>: (default: <code>""</code>) A String representing what the barcode translates to.<br>
+      <code>type</code>: (default: <code>'code128'</code>) A String which identifies the format of the barcode.
+    </span>
+  </p>
+</aside>
+<h2 id='checkbox'>Checkbox <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<ul>
+<li>Checkbox
+
+<ul>
+<li><a href="#field">Field</a></li>
+</ul></li>
+</ul>
+
+<p>A single checkbox that can be checked or unchecked.</p>
+<h3 id='checkbox-constructor'>Checkbox.constructor <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h3>
+<blockquote>
+<p>Checkbox.constructor</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code>  <span class="kr">const</span> <span class="nx">checkbox</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Checkbox</span><span class="p">(</span><span class="s2">"Name"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+</code></pre>
+<p>Initializes a new Checkbox Field.</p>
+
+<aside class="parameters">
+  <p class="title"><span>Parameters</span></p>
+  <p class="parameter">
+    <span class="name">name</span>
+    <span class="type">String</span>
+    <span class="description">
+      The name of the Field as it is on <a href="https://airtable.com">Airtable.com</a>.
+    </span>
+  </p>
+  <p class="parameter">
+    <span class="name">value</span>
+    <span class="type">Boolean</span>
+    <span class="optional"></span>
+    <span class="description">
+      Must be an Integer.
+    </span>
+  </p>
+</aside>
+<h3 id='checkbox-get-value'>Checkbox.get value <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h3>
+<blockquote>
+<p>AutoNumber.get value</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">autoNum</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+</code></pre>
+<blockquote>
+<p>Output:</p>
+</blockquote>
+<pre class="highlight plaintext"><code>1
+</code></pre>
+<aside class="parameters">
+  <p class="title"><span>Return Value</span></p>
+  <p class="parameter">
+    <span class="type">Integer</span>
+    <span class="type">null</span>
+    <span class="description">
+      An Integer, or null if the Field is empty.
+    </span>
+  </p>
+</aside>
+
+<div><!-- spacing --></div>
+<h3 id='autonumber-set-value-2'>AutoNumber.set value <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h3>
+<aside class="warning">
+  The value of this Field cannot be changed.
+</aside>
+<h2 id='collaborator'>Collaborator <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
+<h2 id='count'>Count <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
+<h2 id='createdtime'>CreatedTime <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
+<h2 id='currency'>Currency <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
+<h2 id='datefield'>DateField <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
+<h2 id='email'>Email <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<ul>
+<li>Email
+
+<ul>
+<li><a href="#singlelinetext">SingleLineText</a>
+
+<ul>
+<li><a href="#field">Field</a></li>
+</ul></li>
+</ul></li>
+</ul>
+
+<aside class="notice">
+  Although Airtable.com says this field should be a valid email address, it can be any string.
+</aside>
+
+<p>A valid email address (eg. andrew@gmail.com).</p>
+
+<p>This field currently just extends SingleLineText and behaves exactly the same. Reference <a href="#singlelinetext">SingleLineText</a> for more information.</p>
+<h2 id='formula'>Formula <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
+<h2 id='linktoanotherrecord'>LinkToAnotherRecord <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
+<h2 id='longtext'>LongText <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<ul>
+<li>LongText
+
+<ul>
+<li><a href="#singlelinetext">SingleLineText</a>
+
+<ul>
+<li><a href="#field">Field</a></li>
+</ul></li>
+</ul></li>
+</ul>
+
+<p>A long text field that can span multiple lines.</p>
+
+<p>This field currently just extends SingleLineText and behaves exactly the same. Reference <a href="#singlelinetext">SingleLineText</a> for more information.</p>
+<h2 id='lookup'>Lookup <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
+<h2 id='multipleselect'>MultipleSelect <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
+<h2 id='numberfield'>NumberField <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
+<h2 id='percent'>Percent <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
+<h2 id='phonenumber'>PhoneNumber <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<ul>
+<li>PhoneNumber
+
+<ul>
+<li><a href="#singlelinetext">SingleLineText</a>
+
+<ul>
+<li><a href="#field">Field</a></li>
+</ul></li>
+</ul></li>
+</ul>
+
+<aside class="notice">
+  Although Airtable.com says this field should be a telephone number, it can be any string.
+</aside>
+
+<p>A telephone number (e.g. (206) 794-6391).</p>
+
+<p>This field currently just extends SingleLineText and behaves exactly the same. Reference <a href="#singlelinetext">SingleLineText</a> for more information.</p>
+<h2 id='rating'>Rating <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
+<h2 id='rollup'>Rollup <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
+<h2 id='singlelinetext'>SingleLineText <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
+<h2 id='singleselect'>SingleSelect <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
+<h2 id='unknownfield'>UnknownField <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
+<h2 id='url'>URL <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h2>
+<ul>
+<li>URL
+
+<ul>
+<li><a href="#singlelinetext">SingleLineText</a>
+
+<ul>
+<li><a href="#field">Field</a></li>
+</ul></li>
+</ul></li>
+</ul>
+
+<aside class="notice">
+  Although Airtable.com says this field should be a valid URL, it can be any string.
+</aside>
+
+<p>A valid URL (eg. www.google.com or https://www.amazon.com).</p>
+
+<p>This field currently just extends SingleLineText and behaves exactly the same. Reference <a href="#singlelinetext">SingleLineText</a> for more information.</p>
+<h1 id='strict'>Strict <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h1>
+<p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
+<h1 id='examples'>Examples <img class="header-anchor" src="Airtable-ORM/images/link.svg" title="Click to copy link"></img></h1>
+<p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
+
+      </div>
+      <div class="dark-box">
+      </div>
+    </div>
+  </body>
+</html>
