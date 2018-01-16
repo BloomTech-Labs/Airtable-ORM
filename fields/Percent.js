@@ -20,6 +20,9 @@ const NumberField = require('./NumberField');
  *       A precision set to a float will be floored.
  *       A NaN precision will throw an error.
  *   }]
+ * Strict:
+ *   Throws an error if the value exceeds the precision. Otherwise it will floor
+ *   the value at the specified precision level.
  */
 class Percent extends NumberField {
   constructor(name, value = null, config = {}) {
@@ -31,8 +34,12 @@ class Percent extends NumberField {
       config.allowNegative = false;
 
     if (isNaN(config.precision)) {
-      super(name, value, config);
-      this._error('This Field had its precision set to something which was not a number.', config.precision);
+      const error = new Error(
+        `'precision' for Field '${name}' was not set to a Number in the config. ` +
+        `Received: ${config.precision}`
+      );
+      error.name = 'UninitializedFieldError';
+      throw error;
     }
 
     config.precision = ~~config.precision;

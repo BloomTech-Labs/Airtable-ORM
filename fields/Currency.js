@@ -22,11 +22,10 @@ const NumberField = require('./NumberField');
  *       Setting the precision greater than 8 will result in it being set to 8.
  *       A precision set to a float will be floored.
  *       A NaN precision will throw an error.
- *     strict: <Boolean>
- *       default: false
- *       Throws an error if the value exceeds the precision. Otherwise it will floor
- *       the value at the specified precision level.
  *   }]
+ * Strict:
+ *   Throws an error if the value exceeds the precision. Otherwise it will floor
+ *   the value at the specified precision level.
  */
 class Currency extends NumberField {
   constructor(name, value, config = {}) {
@@ -36,7 +35,7 @@ class Currency extends NumberField {
       config.currencySymbol = '$';
     if (config.currencySymbol.length > 100) {
       console.warn(
-        `CurrencyWarning: The Field '${name}' had a symbol which exceeded the maximum character limit of 100. ` +
+        `CurrencyWarning: The Field '${name}' had a symbol which exceeded the maximum character limit (on Airtable.com) of 100. ` +
         `Trimming the symbol and continuing...`
       )
       config.currencySymbol = config.currencySymbol.substring(0, 100);
@@ -48,22 +47,39 @@ class Currency extends NumberField {
     this._type = 'Currency';
   }
 
+  /* get value
+   * Refer to NumberField get value (Decimal).
+   */
   get value() {
-    return super.value;
+    // can't just return 'super.value || null' because it would return null for a value of 0.
+    return super.value === 0 ? super.value : super.value || null;
   }
 
+  /* set value
+   * Refer to NumberField set value (Decimal).
+   * Note that you can set this value using with the currencySymbol defined in the config attached.
+   * ie. $5.13 or $ 5.13.
+   */
   set value(value) {
+    let curr = value;
     if (this.config.precision < 0 || this.config.precision > 8)
-      throw new Error(`CurrencyError: Unknown precision '${this.config.precision}' in Field '${this.name}'.`);
-    if (isNaN(value) && typeof value === 'string' && value.startsWith(this.config.currencySymbol))
-      value = value.substring(0, this.config.currencySymbol.length).trim();
-    super.value = value;
+      return this._error('Unknown precision.', this.config.precision);
+    if (isNaN(curr) && typeof curr === 'string' && curr.startsWith(this.config.currencySymbol))
+      curr = Number(curr.substring(this.config.currencySymbol.length).trim());
+    if (isNaN(curr))
+      return this._error('Invalid value.', value);
+    super.value = curr;
   }
 
+  /* toString
+   * Return: <String>
+   *   Returns a string in the following format 'My Money: $5.10' where 'My Money' is the name of the field and
+   *   $ and .10 are the currencySymbol and precision defined in the config.
+   */
   toString(includeName = true) {
     if (isNaN(this.value))
       return super.toString(includeName);
-    return `${includeName === true ? `${this.name}: ` : ''}${this.config.currencySymbol}${this.value.toFixed(this.config.precision)}`;
+    return `${includeName === true ? `${this.name}: ` : ''}${this.config.currencySymbol}${typeof this.value === 'number' && !isNaN(this.value) ? this.value.toFixed(this.config.precision) : this.value}`;
   }
 }
 

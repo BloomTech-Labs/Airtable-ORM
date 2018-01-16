@@ -24,7 +24,7 @@ class Rollup extends Field {
   }
 
   get value() {
-    return this._value;
+    return this._value === 0 || this._value === false ? this._value : this._value || null;
   }
 
   set _changed(_) {
@@ -32,10 +32,7 @@ class Rollup extends Field {
   }
 
   set value(value) {
-    if (this._value === undefined)
-      this._value = value;
-    else
-      throw new Error(`RollupError: Rollup Fields cannot be modified.`)
+    this._value = value;
   }
 }
 

@@ -19,14 +19,8 @@ class MultipleSelect extends Field {
       config.options = [];
     if (!Array.isArray(config.options)) {
       const error = new Error(
-        'Expected config.options to be an Array.' +
-        `\nBase: ${config.__base__}` +
-        `\nTable: ${config.__table__}` +
-        `\nField: ${name}` +
-        `\nStrict: ${config.strict === true ? 'true' : 'false'}` + (config.options === undefined ? '' :
-          `\nReceived: ${config.options}` +
-          `\nType: ${Array.isArray(config.options) ? 'array' : typeof config.options}`
-        )
+        `Expected config.options to be an Array in Field '${name}'. ` +
+        `Received: ${config.options}`
       );
       error.name = 'UninitializedFieldError';
       throw error;
@@ -34,14 +28,8 @@ class MultipleSelect extends Field {
       config.options.forEach((option) => {
         if (typeof option !== 'string') {
           const error = new Error(
-            'The options for this field must be an Array of Strings.' +
-            `\nBase: ${config.__base__}` +
-            `\nTable: ${config.__table__}` +
-            `\nField: ${name}` +
-            `\nStrict: ${config.strict === true ? 'true' : 'false'}` + (config.options === undefined ? '' :
-              `\nReceived: ${config.options}` +
-              `\nType: ${Array.isArray(config.options) ? 'array' : typeof config.options}`
-            )
+            `Expected config.options to be an Array in Field '${name}'. ` +
+            `Received: ${config.options}`
           );
           error.name = 'UninitializedFieldError';
           throw error;
@@ -58,8 +46,8 @@ class MultipleSelect extends Field {
 
   get value() {
     if(!Array.isArray(this._value))
-      this._value = [];
-    return this._value;
+      this._value = this._deepFreezeValue([]);
+    return this._deepFreezeValue(this._value === 0 || this._value === false ? this._value : this._value || null);
   }
 
   set options(_){
@@ -68,9 +56,7 @@ class MultipleSelect extends Field {
 
   set value(value = null) {
     if (value === null) {
-      value = [];
-      Object.freeze(value);
-      return this._value = value;
+      return this._value = this._deepFreezeValue([]);
     }
     if (!Array.isArray(this.options))
       return this._error('Expected config.options to be an Array.', this.options);
@@ -79,8 +65,7 @@ class MultipleSelect extends Field {
     for (let i = 0; i < value.length; i++)
       if (this.options.indexOf(value[i]) < 0)
         return this._error('Selected option is not defined in the config.', value[i]);
-    Object.freeze(value);
-    this._value = value;
+    this._value = this._deepFreezeValue(value);
   }
 
   deselectOption(...selections) {

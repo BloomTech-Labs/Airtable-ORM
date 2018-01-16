@@ -16,15 +16,23 @@ const Field = require('./Field');
  */
 class Barcode extends Field {
   constructor(name, { text = '', type = 'code128', ...rest } = {}, config) {
-    if (typeof text !== 'string' || typeof type !== 'string')
-      throw new Error(
-        `BarcodeError: A Barcode field '${name}' was initalized with bad values. text and type must both be strings. ` +
-        `Received: '{ text: ${text}, type: ${type} }' of types '{ text: ${typeof text}, type: ${typeof type} }'`
+    if (typeof text !== 'string' || typeof type !== 'string') {
+      const error = new Error(
+        `Initalized with bad values for Field '${name}'. 'text' and 'type' must both be strings. ` +
+        `Received: ${{ text, type }}`
       );
+      error.name = 'UninitializedFieldError';
+      throw error;
+    }
     super(name, { text, type, ...rest }, config);
     this.type = 'Barcode';
   }
 
+  /* get changed
+   * Return: <Boolean>
+   *   A boolean representing whether or not this field has changed from its original value.
+   *   This function is used by the API.
+   */
   get _changed() {
     if ((this._value === undefined || this._saveValue === null) && (this._originalValue === undefined || this._originalValue === null))
       return false;
@@ -33,6 +41,11 @@ class Barcode extends Field {
     return true;
   }
 
+  /* get _saveValue
+   * Return:
+   *   This function is used by the API to convert the value stored in this field over to a value
+   *   that Airtable.com will accept (if it needs to convert anything).
+   */
   get _saveValue() {
     if (this.value === null || (this._value === undefined && this._originalValue !== undefined))
       return null;
@@ -42,18 +55,42 @@ class Barcode extends Field {
     return { text, type };
   }
 
+  /* get barcodeText
+   * Return: <String>
+   *   A String of the text from the barcode.
+   *   An empty string if the text is empty.
+   */
   get barcodeText() {
     if (this.value === null)
       this._value = this.defaultBarcode();
     return this._value.text;
   }
 
+  /* get barcodeType
+   * Return: <String>
+   *   A String of the type from the barcode.
+   *   The default type that Airtable seems to convert
+   *   everything to is 'code128'. This function will
+   *   likely return that.
+   */
   get barcodeType() {
     if (this.value === null)
       this._value = this.defaultBarcode();
     return this._value.type;
   }
 
+  /* get value
+   * Return: <Object>
+   *   {
+   *     text: <String>
+   *       A String of the text from the barcode.
+   *       An empty string if the text is empty.
+   *     type: <String>
+   *       A String of the type from the barcode.
+   *       The default type that Airtable seems to convert
+   *       everything to is 'code128'. It will likely be that.
+   *   }
+   */
   get value() {
     if (this._value === undefined || this._value === null) {
       this._value = this.defaultBarcode();
@@ -65,46 +102,97 @@ class Barcode extends Field {
     return this._value;
   }
 
-  set _changed(value) {
+  /* set _changed
+   * This function cannot be used.
+   */
+  set _changed(_) {
     return;
   }
 
-  set _saveValue(value) {
+  /* set _saveValue
+   * This function cannot be used.
+   */
+  set _saveValue(_) {
     return;
   }
 
-  set barcodeText(value) {
+  /* set barcodeText
+   * Parameters:
+   *   value: <String>
+   *     default: null
+   *     A String of the text for the barcode.
+   *     undefined or null will be set to an empty String.
+   */
+  set barcodeText(value = null) {
     if (this._value === undefined || this._value === null)
       this._value = this.defaultBarcode();
-    if (value === undefined || value === null)
-      this._value.text = null;
+    if (value === null)
+      this._value.text = '';
     else
       this._value.text = `${value}`;
   }
 
+  /* set barcodeText
+   * Parameters:
+   *   value: <String>
+   *     default: null
+   *     A String of the type for the barcode.
+   *     undefined or null will be set to the type
+   *     from this.defaultBarcode().
+   */
   set barcodeType(value) {
-    if (this._value === undefined || this._value === null)
-      this._value = this.defaultBarcode();
-    if (typeof value !== 'string')
-      throw new Error(`BarcodeError: The type of a Barcode in Field '${this.name}' was not set to a String. Received: '${value}' of type ${typeof value}.`)
-    else
+    if (value === null)
+      value = this.defaultBarcode().type;
+    if (typeof value !== 'string') {
+      return this._error(`'type' must be a string.`, value);
+    } else {
+      if (this._value === undefined || this._value === null)
+        this._value = this.defaultBarcode();
       this._value.type = value;
+    }
   }
 
-  set value(value) {
-    if (value === undefined || value === null)
-      return this._value = this.defaultBarcode();
+  /* set value
+   * Parameters:
+   *   value: <String>
+   *     A String of the text for the barcode.
+   *     undefined or null will be set to an empty String.
+   *   value: {
+   *     text: <String>
+   *       A String of the text for the barcode.
+   *       undefined or null will be set to an empty String.
+   *     type: <String>
+   *       A String of the type for the barcode.
+   *       undefined or null will be set to the type
+   *       from this.defaultBarcode().
+   *   }
+   */
+  set value(value = null) {
+    if (value === null) {
+      value = '';
+      if (typeof this._value === 'object' && this._value !== null)
+        return this._value.text = value;
+      this._value = this.defaultBarcode();
+      return this._value.text = value;
+    }
     if (typeof value === 'object') {
       if (Array.isArray(value))
-        throw new Error(`BarcodeError: value must either be a string to set the text or a key-value object { text, type }. Received an Array.`);
+        return this._error(`'value' must either be a string to set the text or a key-value object { text, type }.`, value);
       const {text, type} = value;
       this.barcodeText = text;
       this.barcodeType = type;
     } else {
+      if (typeof value !== 'string')
+        return this._error(`'value' must either be a string to set the text or a key-value object { text, type }.`, value);
       this.barcodeText = value;
     }
   }
 
+  /* defaultBarcode
+   * Return: <Object>
+   *   An empty barcode using the type ('code128') that
+   *   Airtable seems to set everything to.
+   */
   defaultBarcode() {
     return { text: '', type: 'code128' }
   }

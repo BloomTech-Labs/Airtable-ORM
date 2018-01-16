@@ -21,14 +21,8 @@ class SingleSelect extends MultipleSelect {
       config.options = [];
     if (!Array.isArray(config.options)) {
       const error = new Error(
-        'Expected config.options to be an Array.' +
-        `\nBase: ${config.__base__}` +
-        `\nTable: ${config.__table__}` +
-        `\nField: ${name}` +
-        `\nStrict: ${config.strict === true ? 'true' : 'false'}` + (config.options === undefined ? '' :
-          `\nReceived: ${config.options}` +
-          `\nType: ${Array.isArray(config.options) ? 'array' : typeof config.options}`
-        )
+        `Expected config.options to be an Array in Field '${name}'. ` +
+        `Received: ${config.options}`
       );
       error.name = 'UninitializedFieldError';
       throw error;
@@ -41,9 +35,7 @@ class SingleSelect extends MultipleSelect {
     if (super.value.length > 1)
       super.value = [super.value[0]];
     const value = super.value[0];
-    if (value === undefined)
-      return null;
-    return value;
+    return value || null;
   }
 
   set value(value = null) {

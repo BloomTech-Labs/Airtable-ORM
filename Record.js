@@ -29,11 +29,11 @@ class Record {
     this.table = table;
   }
 
-  /* _fields_
+  /* _knownFields
    * Do not use this!
    */
-  get _fields_() {
-    return this.__fields__;
+  get _knownFields() {
+    return this._knownFields_ || {};
   }
 
   get createdTime() {
@@ -56,15 +56,15 @@ class Record {
     return this._table;
   }
 
-  /* _fields_
+  /* _knownFields
    *  Do not use this!
    */
-  set _fields_(fields) {
-    Object.entries(fields).forEach(([key, field]) => {
-      if (!(field instanceof Field))
-        throw new Error(`RecordError: A field '${key}' was not an instance of a Field object. Received: '${JSON.stringify(field, null, 2)}'`);
-    });
-    this.__fields__ = this._copyFields(fields);
+  set _knownFields(fields) {
+    const knownFields = {};
+    Object.entries(fields).forEach(([key, value]) => {
+      knownFields[key] = true;
+    })
+    this._knownFields_ = knownFields;
   }
 
   set createdTime(createdTime) {
@@ -100,9 +100,7 @@ class Record {
         });
     });
     this._fields = fields;
-    // it saves a copy so that if someone does <record>.fields.<key> = <value> instead of
-    // <record>.fields.<key>.value = <value> then it will be able to fix it and continue operation.
-    this._fields_ = fields;
+    this._knownFields = fields;
   }
 
   set id(id) {
@@ -194,133 +192,169 @@ class Record {
     field.value = value;
   }
 
+  create(setupLinks = true) {
+    setupLinks = setupLinks === true;
+    return this.table.createRecord(this, setupLinks);
+  }
+
   save(deepSave = true) {
     return this.update(deepSave);
   }
 
   update(deepUpdate = true) {
-    const changed = [];
-    Object.entries(this.fields).forEach(([key, field]) => {
-      if (!(field instanceof Field)) {
-        //this will get triggered if someone does <record>.fields.<key> = <value> rather than <record>.fields.<key>.value = <value>
-        if (this._fields_[key] !== undefined) {
-          console.error(new Error(
-            `RecordError: The field '${key}' in table '${this.table.name}' was improperly set. ` +
-            'Attempting to fix the error....'
-          ));
-          this.fields[key] = this._fields_[key].copy();
-          this.fields[key].value = field;
-          field = this.fields[key];
-        } else {
-          console.error(new Error(
-            `RecordError: A field '${key}' in table '${this.table.name}' was improperly set to '${JSON.stringify(field, null, 2)}'. ` +
-            `Unable to automatically fix. Ignoring and continuing operation...`
-          ));
-          return;
-        }
-      }
-      if (this._fields_[key] === undefined) {
-        console.error(new Error(
-          `RecordError: A field '${key}' was attempted to be saved to a record in table '${this.table.name}'. ` +
-          `This field did not exist until the save operation. ` +
-          `New fields must be created on the Airtable website as there is no support for this through their API. ` +
-          `Deleting '${key}' from the record and continuing operation...`
-        ));
-        delete this.fields[key];
-        return;
-      } else if (field._changed) {
-        changed.push(key);
-      }
-    });
-    if (changed.length > 0 && Record._printRecordChanges) {
-      console.log('Changed fields:');
-      console.log(JSON.stringify(changed.map((key) => {
-        return {
-          key: key,
-          originalValue: this.fields[key]._originalValue,
-          newValue: this.fields[key]._saveValue
-        }
-      }), null, 2));
-    }
-    let remainingPromises = 0;
-    const saveError = (reject, error, ...args) => {
-      remainingPromises--;
-      if (typeof error.response !== 'undefined') {
-        if (error.response.status === 429) {
-          // it'll just return because a 429 error references the API Request Limit being exceeded.
-          // the then/success and catch/fail methods will still work because the request is scheduled to re-run automatically
-          // after a cooldown.
-          return;
-        }
-      }
-      Object.entries(this.fields).forEach(([key, field]) => {
-        // skip over LinkToAnotherRecords because their save handlers will also do this,
-        // provided deepUpdate was set to true. Their save handlers are on seperate requests
-        // so failing here shouldn't effect them.
-        if (!(field instanceof LinkToAnotherRecord) && field.value !== field._originalValue)
-          field.value = field._originalValue; // reset fields on an error
-      });
-      reject(error, ...args);
-    };
-    if (deepUpdate === true) {
-      const cache = { [this.id]: true };
-      const searchFields = (record) => {
+    return new Promise((resolve, reject) => {
+      // surrounding everything in a try-catch so Promise doesn't get mad.
+      const tryCB = (cb) => {
+        return (...args) => {
+          try {
+            cb(...args);
+          } catch(error) {
+            reject(error);
+          }
+        };
+      };
+      resolve = tryCB(resolve);
+      reject = tryCB(reject);
+
+      try {
+        const changed = [];
+
         Object.entries(this.fields).forEach(([key, field]) => {
-          if (field instanceof LinkToAnotherRecord) {
-            const records = field.isMulti ? field.value : [field.value];
-            records.forEach((record) => {
-              if (!(record instanceof Record))
-                return;
-              if (cache[record.id] !== true) {
-                cache[record.id] = true;
-                remainingPromises++;
-                record.save(false)
-                  .then(() => remainingPromises--)
-                  .catch((...args) => saveError(reject, ...args));
+
+          if (!(field instanceof Field)) {
+            //this will get triggered if someone does <record>.fields.<key> = <value> rather than <record>.fields.<key>.value = <value>
+            if (this.table.fields[key] !== undefined) {
+              console.error(new Error(
+                `RecordError: The field '${key}' in table '${this.table.name}' was improperly set. ` +
+                'Attempting to fix the error....'
+              ).toString());
+              this.fields[key] = this.table._blankFields[key];
+              this.fields[key].config.__record__ = this;
+              this.fields[key].value = field;
+              if (this.fields[key].value === undefined)
+                this.fields[key]._originalValue = null; // they were likely trying to clear the field so this will make sure it clears
+              field = this.fields[key];
+            }
+          }
+
+          if (this._knownFields[key] !== true) {
+            console.error(new Error(
+              `RecordError: A field '${key}' was attempted to be saved to a record in table '${this.table.name}'. ` +
+              `This field did not exist until the save operation. ` +
+              `New fields must be created on the Airtable website as there is no support for this through their API. ` +
+              `Deleting '${key}' from the record and continuing operation...`
+            ).toString());
+            delete this.fields[key];
+            return;
+          } else if (field._changed) {
+            changed.push(key);
+          }
+
+        });
+
+        if (changed.length > 0 && Record._printRecordChanges) {
+          console.log('Changed fields:');
+          console.log(JSON.stringify(changed.map((key) => {
+            return {
+              key: key,
+              originalValue: this.fields[key]._originalValue,
+              newValue: this.fields[key]._saveValue
+            };
+          }), null, 2));
+        }
+
+        let remainingPromises = 0;
+        const saveError = (reject, error, ...args) => {
+
+          remainingPromises--;
+          if (typeof error.response !== 'undefined') {
+            if (error.response.status === 429) {
+              // it'll just return because a 429 error references the API Request Limit being exceeded.
+              // the then/success and catch/fail methods will still work because the request is scheduled to re-run automatically
+              // after a cooldown.
+              return;
+            }
+          }
+
+          Object.entries(this.fields).forEach(([key, field]) => {
+            // skip over LinkToAnotherRecords because their save handlers will also do this,
+            // provided deepUpdate was set to true. Their save handlers are on seperate requests
+            // so failing here shouldn't effect them.
+            if (!(field instanceof LinkToAnotherRecord) && field.value !== field._originalValue)
+              field.value = field._originalValue; // reset fields on an error
+          });
+          reject(error, ...args);
+
+        };
+
+        if (deepUpdate === true) {
+          const cache = { [this.id]: true };
+          const searchFields = (record) => {
+            Object.entries(this.fields).forEach(([key, field]) => {
+              if (field instanceof LinkToAnotherRecord) {
+                const records = field.isMulti ? field.value : [field.value];
+                records.forEach((record) => {
+                  if (!(record instanceof Record))
+                    return;
+                  if (cache[record.id] !== true) {
+                    cache[record.id] = true;
+                    remainingPromises++;
+                    record.save(false)
+                      .then(() => remainingPromises--)
+                      .catch((...args) => saveError(reject, ...args));
+                  }
+                });
               }
             });
-          }
-        })
-      };
-      searchFields(this);
-    }
-    const waitForPromises = (resolve) => {
-      if (remainingPromises > 0)
-        setTimeout(() => waitForPromises(resolve), 250);
-      else
-        resolve(this);
-    }
-    // this will trigger if they saved but didn't make any changes. If they didn't do .save(false)
-    // then it will wait for any linked records to save before resolving.
-    if (changed.length === 0)
-      return new Promise(resolve => waitForPromises(resolve));
-    return new Promise((resolve, reject) => {
-      this.table._airtable.sendRequest(new Request(
-        Request.types.patch,
-        {
-          base: this.table.base,
-          tableName: this.table.name,
-          appendID: this.id,
-          data: {
-            fields: changed.reduce((obj, item) => {
-              obj[this.fields[item].name] = this.fields[item]._saveValue;
-              return obj;
-            }, {})
-          }
-        },
-        (res) => {
-          Object.entries(this.fields).forEach(([key, field]) => {
-            field._originalValue = field._saveValue;
-            this._fields = this.fields;
-          });
-          waitForPromises(resolve);
-        },
-        (...args) => saveError(reject, ...args)
-      ));
+          };
+          searchFields(this);
+        }
+
+        const waitForPromises = (resolve) => {
+          if (remainingPromises > 0)
+            setTimeout(() => waitForPromises(resolve), 250);
+          else
+            resolve(this);
+        };
+
+        // this will trigger if they saved but didn't make any changes. If they didn't do .save(false)
+        // then it will wait for any linked records to save before resolving.
+        if (changed.length === 0)
+          return waitForPromises(resolve);
+
+        this.table._airtable.sendRequest(new Request(
+          Request.types.patch,
+          {
+            base: this.table.base,
+            tableName: this.table.name,
+            appendID: this.id,
+            data: {
+              fields: changed.reduce((obj, item) => {
+                obj[this.fields[item].name] = this.fields[item]._saveValue;
+                return obj;
+              }, {})
+            }
+          },
+          (res) => {
+            Object.entries(this.fields).forEach(([key, field]) => {
+              field._originalValue = field._saveValue;
+              this._fields = this.fields;
+            });
+            waitForPromises(resolve);
+          },
+          (...args) => saveError(reject, ...args)
+        ));
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
   dangerouslyReplace() {
+
+  }
+
+  dangerouslyDelete() {
 
   }
 

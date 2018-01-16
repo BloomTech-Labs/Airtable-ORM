@@ -24,51 +24,67 @@ const Field = require('./Field');
  *     `email` will succeed; sending only a `name` will fail. Airtable does not look
  *     at the `name`.
  *   [config: {
- *     mutable: <Boolean>
- *       default: false
- *       Defines whether or not the collaborator array (multi: true) can be modified.
- *       Data within a collaborator Object cannot be changed. Saving a collaborator
- *       which isn't part of the Base will throw a 422 error.
  *      multi: <Boolean>
  *        default: false
  *   }]
  */
 class Collaborator extends Field {
   constructor(name, value, config = {}) {
-    if (config.mutable !== true)
-      config.mutable = false;
     if ((value === undefined || value === null) && config.multi === true)
       value = [];
     super(name, value, config);
-    this._originalValue_ = value === undefined ? undefined : JSON.parse(JSON.stringify(value));
+    this._originalValue = value === undefined ? undefined : JSON.parse(JSON.stringify(value));
     this.type = 'Collaborator';
   }
 
-   get isMulti() {
+  /* get isMulti
+   * Return:
+   *   A Boolean representing whether or not this field can accept an Array of collaborators.
+   */
+  get isMulti() {
     return this.config.multi || false;
   }
 
+  /* get value
+   * Return:
+   *   If the field isMulti, this will return an Array of collaborators, or an empty Array.
+   *   Otherwise, the field will return a collaborator or null.
+   *   Example collaborator:
+   *     {
+   *       id: <String> Airtable User ID
+   *       email: <String> User's email
+   *       name: <String> User's full name
+   *     }
+   */
   get value() {
     if ((this._value === undefined || this._value === null) && this.isMulti)
       this._value = [];
-    return this._value;
+    return this._deepFreezeValue(this._value || null);
   }
 
   set isMulti(value) {
-    throw new Error(
-      'CollaboratorError: You cannot define whether or not this Field is multi through this API. ' +
+    this._warn(
+      'You cannot define whether or not this Field is multi through this API. ' +
       'It can only be done through the Airtable website.'
     );
   }
 
+  /* set value
+   * Parameters:
+   *   value: <Array>/<Object>
+   *   If the field isMulti, this will return an Array of collaborators, or an empty Array.
+   *   Otherwise, the field will return a collaborator or null.
+   *   Example collaborator:
+   *     {
+   *       id: <String> Airtable User ID
+   *       email: <String> User's email
+   *       name: <String> User's full name
+   *     }
+   */
   set value(value) {
-    if (this.value !== undefined && this.config.mutable !== true) {
-      console.warn(`CollaboratorError: `)
-      return;
-    }
     if (value === undefined || value === null || (Array.isArray(value) && value.length === 0)) {
       if (this.isMulti)
-        return this.value.length = 0;
+        return this._value = this._deepFreezeValue([]);
       return this._value = null;
     }
     const checkValue = () => {
@@ -81,35 +97,9 @@ class Collaborator extends Field {
       return typeof value === 'object';
     };
     if (checkValue()) {
-      const makeImmutable = (object) => {
-        Object.freeze(object);
-        Object.entries(object).forEach(([key, value]) => {
-          if (typeof key === 'object')
-            makeImmutable(key);
-          if (typeof value === 'object')
-            makeImmutable(value);
-        })
-      };
-      if (this.config.mutable !== true)
-        makeImmutable(value);
-      this._value = value;
+      this._value = this._deepFreezeValue(value);
     } else {
-      throw new Error(`Collaborator: value must be a array of key-value objects. Recieved '${JSON.stringify(value)}' of type '${(() => {
-        let types = '';
-        if (typeof value === 'object') {
-          if (Array.isArray(value)) {
-            types += '[';
-            Object.values(value).forEach((obj) => {
-              types += Array.isArray(obj) ? '<Array>, ' : `<${(typeof obj)[0].toUpperCase() + (typeof(obj)).substring(1)}>, `;
-            });
-            if (types === '[')
-              return '[]';
-            else
-              return types.substring(0, types.length - 2) + ']'
-          }
-        }
-        return typeof value;
-      })()}.'`);
+      this._error(`'value' must be a array of key-value objects.`, value);
     }
   }
 }

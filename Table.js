@@ -7,7 +7,6 @@ const { LinkToAnotherRecord, Lookup, Rollup, UnknownField, Field } = require('./
 class Table {
   constructor(airtable, base, name, fields = {}) {
     this._airtable = airtable;
-    this._defaultFields = {};
     this.base = base;
     this.name = name;
     this.fields = fields;
@@ -17,15 +16,34 @@ class Table {
     return this._airtable_;
   }
 
-  get _defaultFields() {
-    if (this._defaultFields_ === undefined)
-      return undefined;
-    return Object.entries(this._defaultFields_).reduce((defaults, [key, field]) => {
-      defaults[key] = field instanceof Field ? field.copy() : field;
-      if (defaults[key] instanceof LinkToAnotherRecord)
-        this.__addAddRecordFunction__(defaults[key]);
-      return defaults;
-    }, {});
+  get _blankFields() {
+    if (typeof this.fields !== 'object' || this.fields === null)
+      return {};
+    const entries = Object.entries(this.fields);
+    const blankFields = {};
+    for (const [key, settings] of entries) {
+      if (settings === undefined) {
+        const error = new Error(
+          `Improper Field Definition in Table '${this.name}'.\n` +
+          `Received: ${settings}`
+        );
+        error.name = 'TableError';
+        throw error;
+      }
+      if (typeof settings.name !== 'string') {
+        const error = new Error(
+          `Improper Field Definition in Table '${this.name}'.\n` +
+          `Expected 'name' to be a string.\n` +
+          `Received: ${settings}`
+        );
+        error.name = 'TableError';
+        throw error;
+      }
+      const args = [settings.name, undefined, { ...settings }];
+      const blankField = typeof settings.type !== 'function' ? new UnknownField(...args) : new settings.type(...args);
+      blankFields[key] = blankField;
+    }
+    return blankFields;
   }
 
   get base() {
@@ -46,10 +64,8 @@ class Table {
     this._airtable_ = airtable;
   }
 
-  set _defaultFields(defaultFields) {
-    if (this._defaultFields !== undefined)
-      throw new Error('TableError: _defaultFields cannot be changed!');
-    this._defaultFields_ = defaultFields;
+  set _defaultFields(_) {
+    return;
   }
 
   set base(base) {
@@ -64,14 +80,11 @@ class Table {
     if (typeof fields !== 'object' || Array.isArray(fields))
       throw new Error('Fields must be a key-value Object: Received a(n) ' + Array.isArray(fields) ? 'array' : typeof fields + '.');
     Object.entries(fields).forEach(([key, value]) => {
-      if (typeof value !== 'object')
+      if (typeof value !== 'object') // makes sure things that aren't fields are cleared out
         return delete fields[key];
       const { name = key } = value;
       // if name doesn't exist then assume the name of the field is the key.
-      // add the name of the table and the base it is in to the field config.
-      // useful for debugging as they will be shown when errors are thrown within the field.
-      fields[key] = { name, ...value, __table__: this.name, __base__: this.base };
-      this._defaultFields_[key] = new value.type(value.name, undefined, value);
+      fields[key] = { name, ...value };
     });
     this._fields = fields;
   }
@@ -89,34 +102,218 @@ class Table {
     return true;
   }
 
-  _getFieldEntry(name) {
+  _getBlankFieldByName(name) {
+    const blankFields = this._blankFields;
+    if (blankFields === undefined)
+      return;
+    const fields = Object.values(blankFields);
+    for (const field of fields) {
+      if (field instanceof Field) {
+        if (field.name === name)
+          return field;
+      }
+    }
+  }
+
+  _getBlankFieldEntryByName(name) {
+    const blankFields = this._blankFields;
+    if (blankFields === undefined)
+      return [];
+    const fields = Object.entries(blankFields);
+    for (const [key, field] of fields) {
+      if (field instanceof Field) {
+        if (field.name === name)
+          return [key, field];
+      }
+    }
+    return [];
+  }
+
+  _getBlankFieldByKey(key) {
+    const blankFields = this._blankFields;
+    if (blankFields === undefined)
+      return;
+    return blankFields[key];
+  }
+
+  _getBlankFieldEntryByKey(key) {
+    const blankFields = this._blankFields;
+    if (blankFields === undefined)
+      return [];
+    return [key, blankFields[key]];
+  }
+
+  _getFieldSettingsByKey(key) {
+    if (this.fields === undefined)
+      return;
+    return this.fields[key];
+  }
+
+  _getFieldSettingsEntryByKey(key) {
     if (this.fields === undefined)
       return [];
-    const entries = Object.entries(this.fields);
-    for (let i = 0; i < entries.length; i++)
-      if (entries[i][1].name === name)
-        return entries[i];
-    return [];
+    return [key, this.fields[key]];
   }
 
-  _getDefaultFieldEntry(name) {
-    if (this._defaultFields === undefined)
+  _getFieldSettingsByName(name) {
+    if (this.fields === undefined)
+      return;
+    for (const settings of Object.values(this.fields)) {
+      if (settings.name === name)
+        return settings;
+    }
+  }
+
+  _getFieldSettingsEntryByName(name) {
+    if (this.fields === undefined)
       return [];
-    const entries = Object.entries(this._defaultFields);
-    for (let i = 0; i < entries.length; i++)
-      if (entries[i][1].name === name)
-        return entries[i];
+    for (const [key, settings] of Object.entries(this.fields)) {
+      if (settings.name === name)
+        return [key, settings];
+    }
     return [];
   }
 
-  createRecord(record) {
+  getBlankRecord() {
+    return new Record(this, undefined, undefined, this._blankFields);
+  }
 
+  createRecord(record, setupLinks = true) {
+    setupLinks = setupLinks === true;
+    return new Promise((resolve, reject) => {
+      try {
+        // surrounding everything in a try-catch so Promise doesn't get mad.
+        const tryCB = (cb) => {
+          return (...args) => {
+            try {
+              cb(...args);
+            } catch(error) {
+              reject(error);
+            }
+          };
+        };
+        resolve = tryCB(resolve);
+        reject = tryCB(reject);
+
+        if (typeof record === 'object') {
+          if (record instanceof Record) {
+            // create and return the record
+
+            // if (record.primaryField === undefined
+            //   || record.primaryField === null
+            //   || record.primaryField === ''
+            //   || (typeof record.primaryField === 'number' && isNaN(record.primaryField))
+            //   || typeof record.primaryField === 'boolean'
+            //   || Array.isArray(record.primaryField)) {
+            //   const error = new Error(
+            //     `createRecord: Invalid Primary Field. This field cannot be blank.\n` +
+            //     `This field cannot be blank, NaN, a Boolean, or an Array.\n` +
+            //     `Received: ${record.primaryField}`
+            //   );
+            //   error.name = 'TableError';
+            //   return reject(error);
+            // } it can be blank on Airtable.com (weird)
+
+            if (typeof record.id === 'string' && record.id.length > 0) {
+              const error = new Error(
+                `createRecord: This record has already been created (it already has an id).\n` +
+                `Received: ${record}`
+              );
+              error.name = 'TableError';
+              return reject(error);
+            }
+
+            const request = Request.post(
+              {
+                base: this.base,
+                tableName: this.name,
+                data: {
+                  fields: Object.values(record.fields).reduce((fields, field) => {
+                    if (!(field instanceof Field)) {
+                      const error = new Error(
+                        `createRecord: Invalid Field Definition.\n` +
+                        `Received: ${fields}`
+                      );
+                      error.name = 'TableError';
+                      throw error; // have to throw the error and let try-catch catch it so it exits the reduce
+                    }
+                    if (field._changed) // only update this if they actually changed the value
+                      fields[field.name] = field._saveValue;
+                    return fields;
+                  }, {})
+                }
+              },
+              (res) => { // success callback
+                try {
+                  this._handleRecordResponseData(res, setupLinks).then((records) => {
+                    resolve(records[0]);
+                  }).catch(reject);
+                } catch (error) {
+                  reject(error);
+                }
+              },
+              reject // fail
+            );
+
+            this._airtable.sendRequest(request);
+
+          } else if (Array.isArray(record) || record === null) {
+            const error = new Error(
+              `createRecord: 'record' must either be a Record Object or a key-value Object of Field Definitions.\n` +
+              `Received: ${record}`
+            );
+            error.name = 'TableError';
+            return reject(error);
+          } else {
+            // record was field definitions (hopefully)
+            const blankRecord = this.getBlankRecord();
+            for (let [key, value] of Object.entries(record)) {
+              if (blankRecord.fields[key] === undefined) {
+                const error = new Error(
+                  `createRecord: Unknown Field key '${key}'.\n` +
+                  `Received: ${record}`
+                );
+                error.name = 'TableError';
+                return reject(error);
+              }
+              blankRecord[key] = value;
+            }
+            return this.createRecord(blankRecord).then(resolve).catch(reject);
+          }
+        } else if (record === undefined) {
+          return this.createRecord(this.getBlankRecord, setupLinks).then(resolve).catch(reject);
+        } else {
+          const error = new Error(
+            `createRecord: 'record' must either be a Record Object or a key-value Object representing Fields.\n` +
+            `Received: ${record}`
+          );
+          error.name = 'TableError';
+          return reject(error);
+        }
+      } catch (error) {
+        reject(error);
+      }
+    });
   }
 
   query(parameters = {}, setupLinks = true) {
-    setupLinks = setupLinks === true;
     return new Promise((resolve, reject) => {
+      // surrounding everything in a try-catch so Promise doesn't get mad.
+      const tryCB = (cb) => {
+        return (...args) => {
+          try {
+            cb(...args);
+          } catch(error) {
+            reject(error);
+          }
+        };
+      };
+      resolve = tryCB(resolve);
+      reject = tryCB(reject);
+
+      setupLinks = setupLinks === true;
       const { fields, filterByFormula, maxRecords, pageSize = 100, sort, view = 'Grid view', offset } = parameters;
+
       const request = new Request(
         Request.types.get,
         {
@@ -132,271 +329,265 @@ class Table {
             offset
           },
         },
-        (res) => {
+        (res) => { // success callback
           try {
-            // surrounding everything in a try-catch so Promise doesn't get mad.
-            const tryCB = (cb) => {
-              return (...args) => {
-                try {
-                  cb(...args);
-                } catch(error) {
-                  reject(error);
-                }
-              };
-            };
-            if (res.data.records === undefined)
-              resolve([]);
-            const records = new RecordArray(this, res.data.offset, parameters, setupLinks);
-            res.data.records.forEach(tryCB((record) => {
-              const fields = {...this._defaultFields};
-              Object.entries(record.fields).forEach(tryCB(([name, value]) => {
-                const [key, settings] = this._getFieldEntry(name);
-                const args = [name, value, { ...settings, __record__: record.id }];
-                const f = settings === undefined ? new UnknownField(...args) : new settings.type(...args);
-                if (f instanceof LinkToAnotherRecord)
-                  this.__addAddRecordFunction__(f);
-                fields[key || name] = f;
-              }));
-              try {
-                records.push(new Record(this, record.id, record.createdTime, fields));
-              } catch (error) {
-                reject(error);
-              }
-            }));
-            // set up link Fields
-            let remainingPromises = 0;
-            //wait for promises to finish
-            const waitForPromises = () =>
-              new Promise((resolve) => {
-                try {
-                  const checkPromises = () => {
-                    if (remainingPromises > 0)
-                      setTimeout(checkPromises, 250);
-                    else
-                      resolve();
-                  }
-                  checkPromises();
-                } catch (error) {
-                  reject(error);
-                }
-              });
-            const retrieved = {};
-            const storeRecord = (record) => {
-              try {
-                if (typeof retrieved[record.table.name] !== 'object')
-                  retrieved[record.table.name] = {};
-                if (!(retrieved[record.table.name][record.id] instanceof Record))
-                  retrieved[record.table.name][record.id] = record;
-              } catch (error) {
-                reject(error);
-              }
-            }
-            if (setupLinks)
-              records.forEach(storeRecord);
-            const getLinkedRecords = () => {
-              try {
-                let recheck = false;
-                // find records to get and fill in linked records
-                const searchedRecords = {};
-                const searchForLinks = (record) => {
-                  try {
-                    if (searchedRecords[record.table.name + record.id])
-                      return;
-                    else
-                      searchedRecords[record.table.name + record.id] = true;
-                    const links = Object.values(record.fields).reduce((links, next) => {
-                      if (next instanceof LinkToAnotherRecord)
-                        links.push(next);
-                      return links;
-                    }, []);
-                    links.forEach(tryCB((link) => {
-                      const values = link.isMulti ? [...link.value] : [link.value];
-                      values.forEach((id, index) => {
-                        if (id instanceof Record) {
-                          searchForLinks(id);
-                        } else {
-                          if (typeof retrieved[link.config.table] !== 'object')
-                            retrieved[link.config.table] = {};
-                          const linked = retrieved[link.config.table][id];
-                          recheck = true;
-                          if (linked instanceof Record) {
-                            if (link.isMulti)
-                              values[index] = linked;
-                            else
-                              link.value = linked;
-                          } else {
-                            retrieved[link.config.table][id] = true;
-                          }
-                        }
-                      });
-                      if (link.isMulti)
-                        link.value = values;
-                    }));
-                  } catch (error) {
-                    reject(error);
-                  }
-                };
-                records.forEach(searchForLinks);
-                // get missing linked records
-                Object.entries(retrieved).forEach(tryCB(([tableName, keys]) => {
-                  let ids = Object.keys(keys);
-                  ids = ids.reduce((arr, id) => {
-                    if (!(retrieved[tableName][id] instanceof Record))
-                      arr.push(id);
-                    return arr;
-                  }, []);
-                  const sendRequest = (ids) => {
-                    if (ids.length === 0)
-                      return;
-                    const table = this._airtable.getTable(tableName, this.base);
-                    if (table === undefined) {
-                      console.log(new Error(`TableError: Table '${tableName}' is undefined. You may have an error in your Table definition. This Table is refered to by a LinkToAnotherRecord Field.`));
-                      process.exit(1); //exit to prevent loop as it keeps trying to access this table
-                    }
-                    let filter = '';
-                    if (ids.length >  1) {
-                      filter = 'OR(';
-                      ids.forEach(id => filter += `RECORD_ID() = "${id}", `);
-                      filter = filter.substring(0, filter.length - 2) + ')';
-                    } else {
-                      filter = `RECORD_ID() = "${ids[0]}"`;
-                    }
-                    remainingPromises++;
-                    table.query({ filterByFormula: filter }, false)
-                      .then((records) => {
-                        records.forEach(storeRecord);
-                        remainingPromises--;
-                      })
-                      .catch((...args) => {
-                        remainingPromises--;
-                        reject(...args);
-                      });
-                  }
-                  do {
-                    sendRequest(ids.splice(0, ids.length > 100 ? 100 : ids.length));
-                  } while(ids.length > 0);
-                }));
-                waitForPromises().then(() => {
-                  if (recheck) {
-                    getLinkedRecords()
-                  } else {
-                    resolve(records)
-                  }
-                })
-              } catch (error) {
-                reject(error);
-              }
-            };
-            if (setupLinks)
-              getLinkedRecords();
-            else
-              resolve(records);
+            const recordArray = new RecordArray(this, res.data.offset, parameters, setupLinks);
+            this._handleRecordResponseData(res, setupLinks).then((records) => {
+              recordArray.push(...records);
+              resolve(recordArray);
+            }).catch(reject);
           } catch (error) {
             reject(error);
           }
         },
-        reject
+        reject // fail callback
       );
+
       this._airtable.sendRequest(request);
     });
   }
 
-  _generateOrFilter(strings) {
-    if (typeof strings === 'string')
-      strings = [strings];
-    if (!Array.isArray() || strings.length == 0)
-      return;
-    let filter = 'OR(';
-    strings.forEach(string => filter += `RECORD_ID() = "${string}", `);
-    filter = filter.substring(0, filter.length - 2) + ')';
-    return filter;
+  _handleRecordResponseData(res, setupLinks = true) {
+    setupLinks = setupLinks === true;
+    return new Promise((resolve, reject) => {
+      try {
+        // surrounding everything in a try-catch so Promise doesn't get mad.
+        const tryCB = (cb) => {
+          return (...args) => {
+            try {
+              cb(...args);
+            } catch(error) {
+              reject(error);
+            }
+          };
+        };
+        resolve = tryCB(resolve);
+        reject = tryCB(reject);
+
+        if (res.data === undefined)
+          return resolve([]);
+        if (res.data.records === undefined)
+          res.data = { records: res.data }; // ony got one record back
+        const convertedRecords = this._convertRecordData(res.data.records, setupLinks)
+          .then((records) => {
+            if (!Array.isArray(records)) {
+              if (!(records instanceof Record))
+                return resolve([]);
+              return resolve([records]);
+            }
+            return resolve(records);
+          })
+          .catch(reject);
+      } catch (error) {
+        reject(error);
+      }
+    })
   }
 
-  __addAddRecordFunction__(linkToAnotherRecord) {
-    if (!(linkToAnotherRecord instanceof LinkToAnotherRecord))
-      throw new Error(`TableError: __addAddRecordFunction__ expects a LinkToAnotherRecord Object. Received: ${linkToAnotherRecord} of type ${typeof linkToAnotherRecord}`);
-    const instance = this;
-    const addRecord = function (record = null, setupLinks = true) {
-      // in this function I return resolve(this) after using this._error because it should only hit the return
-      // statmenet if __ignoreFieldErrors__ is set to true. It returns to ignore the attempted change
-      const records = [];
-      return new Promise((resolve, reject) => {
-        try {
-          if (record === null)
-            return resolve(this);
-          const value = this.value;
-          if (this.config.__strict__ === true && !this.isMulti && value !== null) {
-            this._error('There is already a record stored in this field.');
-            return resolve(this);
-          }
-          const getID = (record) => {
-            if (typeof record === 'string')
-              return record;
-            if (record instanceof Record)
-              return record.id;
-            this._error('Expected record to be a String or a Record Object.', record);
+  _convertRecordData(data, setupLinks = true) {
+    setupLinks = setupLinks === true;
+    return new Promise((resolve, reject) => {
+
+      try {
+        // surrounding everything in a try-catch so Promise doesn't get mad.
+        const tryCB = (cb) => {
+          return (...args) => {
+            try {
+              cb(...args);
+            } catch(error) {
+              reject(error);
+            }
           };
-          const requestRecord = (recordID) => {
-            // this should never happen because it would be the API's fault.
-            if (typeof recordID !== 'string') {
-              this._error('Expected recordID to be a String.', recordID);
-              return resolve(this);
+        };
+        resolve = tryCB(resolve);
+        reject = tryCB(reject);
+
+        if (typeof data !== 'object' || data === null)
+          return resolve([]);
+
+        let _data = data;
+        let _setupLinks = setupLinks;
+        if (!Array.isArray(data)) {
+          _data = [data];
+        }
+
+        const records = [];
+        _data.forEach(tryCB((record) => {
+          const fields = {...this._blankFields};
+          const recordObj = new Record(this, record.id, record.createdTime);
+          Object.entries(record.fields).forEach(tryCB(([name, value]) => {
+            const [key, settings] = this._getFieldSettingsEntryByName(name);
+            const args = [name, value, { ...settings, __record__: recordObj }];
+            const f = settings === undefined || typeof settings.type !== 'function' ? new UnknownField(...args) : new settings.type(...args);
+            fields[key || name] = f;
+          }));
+          try {
+            recordObj.fields = fields;
+            records.push(recordObj);
+          } catch (error) {
+            reject(error);
+          }
+        }));
+
+        // set up link Fields
+
+        //wait for promises to finish
+        let remainingPromises = 0;
+        const waitForPromises = () =>
+          new Promise((resolve) => {
+            try {
+              const checkPromises = () => {
+                if (remainingPromises > 0)
+                  setTimeout(checkPromises, 250);
+                else
+                  resolve();
+              }
+              checkPromises();
+            } catch (error) {
+              reject(error);
             }
-            const table = instance._airtable.getTable(this.config.table, instance.base);
-            if (table === undefined) {
-              console.log(new Error(`TableError: Table '${tableName}' is undefined. You may have an error in your Table definition. This Table is refered to by a LinkToAnotherRecord Field.`));
-              process.exit(1); //exit to prevent loop as it keeps trying to access this table
-            }
-            table.query({ filterByFormula: `RECORD_ID() = "${recordID}"`}, setupLinks).then((query) => {
+          });
+
+        const retrieved = {};
+        const storeRecord = (record) => {
+          try {
+            if (!(record instanceof Record))
+              return;
+            if (typeof retrieved[record.table.name] !== 'object')
+              retrieved[record.table.name] = {};
+            if (!(retrieved[record.table.name][record.id] instanceof Record))
+              retrieved[record.table.name][record.id] = record;
+          } catch (error) {
+            reject(error);
+          }
+        }
+
+        if (setupLinks)
+          records.forEach(storeRecord); // add known records
+
+        const getLinkedRecords = () => {
+          try {
+            let recheck = false; // set to true when new records are added. rechecks that all dependencies have been filled
+            // find records to get and fill in linked records
+            const searchedRecords = {};
+
+            const searchForLinks = (record) => {
               try {
-                const record = query[0];
-                if (record === undefined) {
-                  this._error('Unable to find Record with the given ID.', recordID);
-                  return resolve(this);
-                }
-                if (this.isMulti) {
-                  records.push(record);
-                  this.value = records;
-                } else {
-                  this.value = record;
-                }
-                return resolve(this);
+                if (searchedRecords[record] === true)
+                  return;
+                else
+                  searchedRecords[record] = true;
+                const links = Object.values(record.fields).reduce((links, next) => {
+                  if (next instanceof LinkToAnotherRecord)
+                    links.push(next);
+                  return links;
+                }, []);
+                links.forEach(tryCB((link) => {
+                  const values = link.isMulti ? [...link.value] : [link.value];
+                  values.forEach((id, index) => {
+                    if (id instanceof Record) {
+                      searchForLinks(id);
+                    } else {
+                      if (typeof retrieved[link.config.table] !== 'object')
+                        retrieved[link.config.table] = {};
+                      const linked = retrieved[link.config.table][id];
+                      recheck = true;
+                      if (linked instanceof Record) {
+                        if (link.isMulti)
+                          values[index] = linked;
+                        else
+                          link.value = linked;
+                      } else {
+                        retrieved[link.config.table][id] = true;
+                      }
+                    }
+                  });
+                  if (link.isMulti)
+                    link.value = values;
+                }));
               } catch (error) {
                 reject(error);
               }
-            }).catch(reject);
+            };
+
+            records.forEach(searchForLinks); // find missing dependencies
+
+            // get missing dependencies
+            Object.entries(retrieved).forEach(tryCB(([tableName, keys]) => {
+              let ids = Object.keys(keys);
+              ids = ids.reduce((arr, id) => {
+                if (!(retrieved[tableName][id] instanceof Record))
+                  arr.push(id);
+                return arr;
+              }, []);
+
+              const sendRequest = (ids = []) => { // send request to get missing dependencies
+                if (ids.length === 0)
+                  return;
+                const table = this._airtable.getTable(tableName, this.base);
+                if (table === undefined) {
+                  console.log(new Error(`TableError: Table '${tableName}' is undefined. You may have an error in your Table definition. This Table is refered to by a LinkToAnotherRecord Field.`));
+                  process.exit(1); //exit to prevent loop as it keeps trying to access this table
+                }
+                let filter = this._generateOrFilter(ids);
+                if (typeof filter !== 'string')
+                  return;
+                remainingPromises++;
+                table.query({ filterByFormula: filter }, false)
+                  .then((records) => {
+                    records.forEach(storeRecord);
+                    remainingPromises--;
+                  })
+                  .catch((...args) => {
+                    remainingPromises--;
+                    reject(...args);
+                  });
+              }
+
+              do // send requests in groups of 100 (max record count from airtable)
+                sendRequest(ids.splice(0, ids.length > 100 ? 100 : ids.length));
+              while (ids.length > 0);
+
+            }));
+
+            waitForPromises().then(() => {
+              if (recheck) {
+                getLinkedRecords();
+              } else {
+                resolve(records);
+              }
+            })
+
+          } catch (error) {
+            reject(error);
           }
-          const rID = getID(record);
-          if (rID === undefined)
-            return resolve(this);
-          if (this.isMulti) {
-            // add values other than the item being added. In the case that the item is already stored
-            // and the stored version is a Record Object, it will just exit out and not request anything.
-            for (let i = 0; i < value.length; i++) {
-              const srID = getID(value[i]);
-              if (srID === undefined)
-                return resolve(this);
-              if (rID !== srID)
-                records.push(value[i]);
-              else if (value[i] instanceof Record)
-                return resolve(this); // already an instanceof Record so no point in re-requesting it.
-            }
-          } else {
-            const srID = getID(value);
-            if (rID === srID)
-              return resolve(this);
-          }
-          requestRecord(rID);
-        } catch (error) {
-          reject(error);
-        }
-      });
-    };
-    Object.defineProperty(linkToAnotherRecord, 'addRecord', {
-      value: addRecord,
-      writable: false,
-      configurable: false
+        };
+
+        if (setupLinks)
+          getLinkedRecords();
+        else
+          resolve(records);
+
+      } catch (error) {
+        reject(error);
+      }
     });
+
+  }
+
+  _generateOrFilter(recordIDs) {
+    if (typeof recordIDs !== 'string' && !Array.isArray(recordIDs))
+      return;
+    if (typeof recordIDs === 'string')
+      recordIDs = [recordIDs];
+    if (!Array.isArray(recordIDs) || recordIDs.length === 0)
+      return;
+    if (recordIDs.length === 1)
+      return `RECORD_ID() = "${strings[0]}"`;
+    let filter = 'OR(';
+    recordIDs.forEach(id => filter += `RECORD_ID() = "${id}", `);
+    filter = filter.substring(0, filter.length - 2) + ')';
+    return filter;
   }
 }
 

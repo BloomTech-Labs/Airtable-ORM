@@ -5,8 +5,8 @@ const Field = require('./Field');
  * Parameters:
  *   name: <String>
  *   value: <String>
- *   [config: {
- *     dateFormat: <String> 'Local' / 'Friendly' / 'US' / 'European' / 'ISO'
+ *   config: {
+ *     [dateFormat: <String> 'Local' / 'Friendly' / 'US' / 'European' / 'ISO']
  *       default: 'Local'
  *       How to format the date.
  *       'Local' (01/02/2018)
@@ -20,12 +20,12 @@ const Field = require('./Field');
  *     includeTime: <Boolean>
  *       default: false
  *       Whether or not to include the time along with the date.
- *     timeFormat: <Number>/<String> 12 / 24 / '12' / '24'
+ *     [timeFormat: <Number>/<String> 12 / 24 / '12' / '24']
  *       default: 12
  *       Format time as 12 hour or 24 hour.
  *       12 (12:03am)
  *       24 (00:00)
- *     includeDay: <Boolean>
+ *     [includeDay: <Boolean>]
  *       default: false
  *       Whether or not to include the day when converting this Field toString().
  *       Airtable does not show the day on their website.
@@ -34,20 +34,21 @@ const Field = require('./Field');
  *       'US' (Tue 01/02/2018)
  *       'European' (Tue 02/01/2018)
  *       'ISO' (2018-01-02)
- *     includeSeconds: <Boolean>
+ *     [includeSeconds: <Boolean>]
  *       default: false
  *       Whether or not to include the seconds when converting this Field toString().
  *       Airtable does not show the seconds on their website although they do allow seconds
  *       to be saved.
  *       12 (12:03:30am)
  *       24 (00:00:30)
- *   }]
- *     The config determines the behavior of this Field's toString() function. It does not effect
- *     how Date Objects will be saved. Setting includeTime to false will still result in time data
- *     being saved if it is present in the Date Object. However, if the field isn't set to include
- *     the time on Airtable's website, Airtable will ignore the time data.
+ *   }
  */
 class DateField extends Field {
+  /* static get days
+   * Return: <Array>
+   *   An Array of the days of the week fully spelled out (ie. 'Sunday')
+   *   beginning with Sunday.
+   */
   static get days() {
     return [
       'Sunday',
@@ -60,6 +61,11 @@ class DateField extends Field {
     ];
   }
 
+  /* static get months
+   * Return: <Array>
+   *   An Array of the months of the year fully spelled out (ie. 'January')
+   *   beginning with January.
+   */
   static get months() {
     return [
       'January',
@@ -77,17 +83,31 @@ class DateField extends Field {
     ];
   }
 
+  /* static set days
+   * This function cannot be used.
+   */
   static set days(_) {
     return;
   }
 
+  /* static set months
+   * This function cannot be used.
+   */
   static set months(_) {
     return;
   }
 
   constructor(name, value, config = {}) {
-    if (config.includeTime !== true)
-      config.includeTime = false;
+    if (typeof config.includeTime !== 'boolean') {
+      const error = new Error(
+        `DateField: includeTime must be a boolean.\n` +
+        `Airtable.com will not accept normal timestamps and the API needs to know how to save this field if it changes.\n` +
+        `Received: ${config.includeTime}`
+      );
+      error.name = 'UninitializedFieldError';
+      throw error;
+    }
+
     if (config.includeDay !== true)
       config.includeDay = false;
     if (config.includeSeconds !== true)
@@ -106,7 +126,12 @@ class DateField extends Field {
       case 'Date':
         break;
       default:
-        throw new Error(`DateFieldError: Unknown dateFormat '${config.dateFormat}' for field '${name}'.`);
+        const error = new Error(
+          `Unknown dateFormat in the config for Field '${name}'. ` +
+          `Received: ${config.dateFormat}`
+        );
+        error.name = 'UninitializedFieldError';
+        throw error;
     }
 
     switch (config.timeFormat) {
@@ -116,7 +141,12 @@ class DateField extends Field {
       case 24:
         break;
       default:
-        throw new Error(`DateFieldError: Unknown timeFormat '${config.timeFormat}' for field '${name}'.`);
+        const error = new Error(
+          `Unknown timeFormat in the config for Field '${name}'. ` +
+          `Received: ${config.timeFormat}`
+        );
+        error.name = 'UninitializedFieldError';
+        throw error;
     }
 
     if (typeof value === 'string') {
@@ -130,33 +160,56 @@ class DateField extends Field {
     this.type = 'Date';
   }
 
+  /* get changed
+   * Return: <Boolean>
+   *   A boolean representing whether or not this field has changed from its original value.
+   *   This function is used by the API.
+   */
   get _changed() {
-    return `${this.value}` !== `${this._originalValue}`;
+    if (!(this._originalValue instanceof Date))
+      return `${this._saveValue}` !== `${this._originalValue}`;
+    return `${this._saveValue}` !== `${this.config.includeTime ? this._originalValue.toISOString() : this._originalValue.toISOString().split('T')[0]}`;
+  }
+
+  get _saveValue() {
+    if (!(this.value instanceof Date))
+      return this.value;
+    return this.config.includeTime ? this.value.toISOString() : this.value.toISOString().split('T')[0];
   }
 
   get value() {
-    return this._value;
+    return this._value || null;
   }
 
-  set changed(_) {
+  /* set _changed
+   * This function cannot be used.
+   */
+  set _changed(_) {
     return;
   }
 
-  set value(value) {
-    if (value === undefined || value === null)
-      return this.value = null;
+  /* set _changed
+   * This function cannot be used.
+   */
+  set _saveValue(_) {
+    return;
+  }
+
+  set value(value = null) {
+    if (value === null)
+      return this._value = null;
     if (typeof value === 'string') {
       let date = new Date(value);
       value = value.trim();
       if (value.length === 10)
         date = new Date(value.replace(/-/g, ' '));
       if (date.toString() === 'Invalid Date')
-        throw new Error(`DateFieldError: Invalid Date for Field '${this.name}'. Received: ${value} of type ${typeof value}`);
+        return this._error('Invalid Date', value);
       this._value = date;
     } else if (value instanceof Date) {
       this._value = value;
     } else {
-      throw new Error(`DateFieldError: Invalid Date for Field '${this.name}'. Received: ${value} of type ${typeof value}`);
+      return this._error('Invalid Date', value);
     }
   }
 
@@ -175,26 +228,22 @@ class DateField extends Field {
       const hour = this.value.getHours();
       const minute = padNum(this.value.getMinutes());
       const second = padNum(this.value.getSeconds());
-      let dateFormat = this.config.dateFormat;
-      if (dateFormat === 'Local') {
-        dateFormat = 'US';
-      }
-      switch (dateFormat) {
+      switch (this.config.dateFormat) {
         case 'Friendly':
           string = `${this.config.includeDay ? `${DateField.days[day]}, ` : ''}${DateField.months[parseInt(month)-1]} ${date}, ${year}`;
           break;
+        case 'Local':
         case 'US':
           string = `${this.config.includeDay ? `${DateField.days[day].substring(0, 3)} ` : ''}${month}/${date}/${year}`;
           break;
         case 'European':
           string = `${this.config.includeDay ? `${DateField.days[day].substring(0, 3)} ` : ''}${date}/${month}/${year}`;
           break;
-        case 'Local':
         case 'ISO':
           string = `${year}-${month}-${date}`;
           break;
         default:
-          throw new Error(`DateFieldError: Unknown dateFormat '${this.config.dateFormat}' for field '${this.name}'.`);
+          return this._error(`Unknown dateFormat in config.`, this.config.dateFormat);
       }
       if (this.config.includeTime === true) {
         if (typeof string !== 'string')
@@ -211,7 +260,7 @@ class DateField extends Field {
             string += `${padNum(hour)}:${minute}${this.config.includeSeconds ? `:${second}` : ''}`;
             break;
           default:
-            throw new Error(`DateFieldError: Unknown timeFormat '${this.config.timeFormat}' for field '${this.name}'.`);
+            return this._error(`Unknown timeFormat in config.`, this.config.timeFormat);
         }
       }
     }

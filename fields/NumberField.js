@@ -21,11 +21,10 @@ const Field = require('./Field');
  *       Setting the precision greater than 8 will set it to 8.
  *       A precision set to a float will be floored.
  *       A NaN precision will throw an error.
- *     strict: <Boolean>
- *       default: false
- *       Throws an error if the value exceeds the precision. Otherwise it will floor
- *       the value at the specified precision level.
  *   }]
+ * Strict:
+ *   Throws an error if the value exceeds the precision. Otherwise it will floor
+ *   the value at the specified precision level.
  */
 class NumberField extends Field {
   constructor(name, value = null, config = {}) {
@@ -35,12 +34,12 @@ class NumberField extends Field {
       config.precision = 1;
     if (config.allowNegative !== true)
       config.allowNegative = false;
-    if (config.strict !== true)
-      config.strict = false;
+    if (config.__strict__ !== true)
+      config.__strict__ = false;
 
     if (isNaN(config.precision)) {
       super(name, value, config);
-      this._error('This Field had its precision set to something which was not a number.', config.precision);
+      return this._error('This Field had its precision set to something which was not a number.', config.precision, true);
     }
 
     config.precision = ~~config.precision;
@@ -51,7 +50,7 @@ class NumberField extends Field {
 
     if (config.format !== 'Decimal' && config.format !== 'Integer') {
       super(name, value, config);
-      this._error('This field was set to an unknown format. Please reference the docs an set this field to a specified format.', this.config.format);
+      return this._error('This field was set to an unknown format. Please reference the docs an set this field to a specified format.', this.config.format, true);
     }
 
     super(name, value, config);
@@ -66,20 +65,24 @@ class NumberField extends Field {
     if (value === null)
       return this._value = null;
     if (isNaN(value))
-      this._error('value must be a number!', value);
+      return this._error('value must be a number!', value);
     if (isNaN(this.config.precision))
-      this._error('This Field had its precision set to something which was not a number.', config.precision);
+      return this._error('This Field had its precision set to something which was not a number.', config.precision);
     value = Number(value);
-    if (this.config.strict === true && (value !== this._cutNumber(value, this.config.precision)))
-      this._error(`This Field has a precision of '${this.config.precision}' which was exceeded.`, value);
+    if (this.config__strict__ === true && (value !== this._cutNumber(value, this.config.precision)))
+      return this._error(`This Field has a precision of '${this.config.precision}' which was exceeded.`, value);
     if (this.config.format === 'Integer')
       value = ~~value;
-    else if (this.config.format === 'Decimal')
-      value = this._cutNumber(value, this.config.precision);
+    else if (this.config.format === 'Decimal') {
+      const newValue = this._cutNumber(value, this.config.precision);
+      if (newValue === undefined) // error was thrown an ignored in _cutNumber
+        return;
+      value = newValue;
+    }
     else
-      this._error('This field was set to an unknown format. Please reference the docs an set this field to a specified format.', this.config.format);
+      return this._error('This field was set to an unknown format. Please reference the docs an set this field to a specified format.', this.config.format);
     if (this.config.allowNegative === false && value < 0)
-      this._error('The config for this field states that the value cannot be negative.', value);
+      return this._error('The config for this field states that the value cannot be negative.', value);
     this._value = value;
   }
 
@@ -87,9 +90,9 @@ class NumberField extends Field {
     // toFixed rounds the number. _cutNumber will drop anything after the precision defined
     // in the field config.
     if (isNaN(number))
-      this._error('Expected number to be a Number!', number);
+      return this._error('Expected number to be a Number!', number);
     if (isNaN(precision))
-      this._error('Expected precision to be a Number!', precision);
+      return this._error('Expected precision to be a Number!', precision);
     number = Number(number);
     precision = ~~Number(precision);
     if (this.config.format === 'Integer' || precision <= 0)

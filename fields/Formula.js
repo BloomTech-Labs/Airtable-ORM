@@ -10,7 +10,7 @@ const Field = require('./Field');
  * it relies on changes.
  * Parameters:
  *   name: <String>
- *   value: <Number>
+ *   value: <String>/<Number>/<Number Array>/<String Array>
  *     The value cannot be changed.
  */
 class Formula extends Field {
@@ -24,7 +24,7 @@ class Formula extends Field {
   }
 
   get value() {
-    return this._value;
+    return this._value === 0 || this._value === false ? this._value : this._value || null;
   }
 
   set _changed(_) {
@@ -35,7 +35,7 @@ class Formula extends Field {
     if (this._value === undefined)
       this._value = value;
     else
-      throw new Error(`FormulaError: Formula Fields cannot be modified.`)
+      this._error(`Formula Fields cannot be modified.`)
   }
 }
 

@@ -1,7 +1,60 @@
 TODO
 
-fill out all the field classes
+finish docs in code
+add support for createRecord -- done
 
-write query functions (find where filter exec)
+create wiki on github
+create README
 
-do documentation on everything
+verify that `npm install Lambda-School-Labs/Airtable-ORM` works properly
+
+verify that everything follows Strict
+
+test test test
+
+publish version 0.1.0
+
+get rid of field copies that aren't necessary anymore -- done
+write query functions
+
+test test test
+write documentation
+
+publish version 0.1.1
+
+handle "special values" from Airtable { specialValue: '#Error' }
+add support for dangerouslyReplace
+create Attachment object to make using Attachment Field data easier
+handle no-connection errors
+find other request errors that I should handle
+
+test test test
+write documentation
+
+publish version 0.1.2
+
+if these features are wanted:
+  add different value fixing behaviors that can be defined in field configs.
+    ie. NumberField { round: 'Floor'/'Ceil'/'Nearest' } where if the precision
+    was set to 3 and the number 1.2345 was given, it would set that to 1.234/1.235/1.235.
+    1.2345 would still throw an error in Strict.
+  add support for verifying phone-numbers/emails/urls when in strict mode
+    ie 801234 wouldn't be a valid phone number.
+       jeff@bob wouldn't be a valid email.
+       laskdfj wouldn't be a valid url.
+  create forumla engine to allow Rollup and Formula fields to maintain
+    correct values as data in records/fields they rely on changes.
+  create a record cache to reduce the number of requests and help ensure
+    that requests for records that are in use don't grab data that will be old as
+    soon as the other process that's using that record saves. cache would store how
+    long ago a record was requested and clear out records that haven't been used
+    for 2 min and that aren't in the request queue waiting to save.
+  add 'airtableShutDown' event so that data which hasn't been saved can be logged to a file
+    when an error is thrown or Airtable calls process.exit (maybe let all post/put/patch requests
+    go through as well)
+
+ fields: {
+    bob: {
+      specialValue: "NaN"
+    }
+ }
