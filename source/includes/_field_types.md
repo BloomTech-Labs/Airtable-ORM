@@ -22,7 +22,7 @@ Attachments allow you to add images, documents, or other files which can then be
   422 Error when the Record fails to save.
 </aside>
 
->Attachment.constructor
+>Attachment.constructor(name, value [, config])
 
 ```javascript
   const attachment = new Attachment("Name", []);
@@ -42,16 +42,17 @@ Initializes a new Attachment Field.
   <p class="parameter">
     <span class="name">value</span>
     <span class="type">Array</span>
-    <span class="optional"></span>
     <span class="description">
       Should be an Array of key-value Objects representing an Attachment.
     </span>
   </p>
 </aside>
 
+<div><!-- spacing --></div>
+
 ### Attachment.get value
 
->Attachment.get value
+>Attachment.get value()
 
 ```javascript
 console.log(JSON.stringify(attachment.value, null, 2));
@@ -100,7 +101,7 @@ Returns the value of this Field in an immutable Array.
 
 ### Attachment.set value
 
->Attachment.set value
+>Attachment.set value(value)
 
 ```javascript
 attachment.value = attachment.value.slice(1);
@@ -118,6 +119,8 @@ Used to set the value of this Field. Setting this Field to `null` or `undefined`
     </span>
   </p>
 </aside>
+
+<div><!-- spacing --></div>
 
 ## AutoNumber
 
@@ -140,7 +143,7 @@ Automatically incremented unique counter for each record.
   The value for this field is automatically incremented starting at 1. The value cannot be changed.
 </aside>
 
->AutoNumber.constructor
+>AutoNumber.constructor(name, value [, config])
 
 ```javascript
   const autoNum = new AutoNumber("Name", 1);
@@ -160,12 +163,13 @@ Initializes a new AutoNumber Field.
   <p class="parameter">
     <span class="name">value</span>
     <span class="type">Integer</span>
-    <span class="optional"></span>
     <span class="description">
       Must be an Integer.
     </span>
   </p>
 </aside>
+
+<div><!-- spacing --></div>
 
 ### AutoNumber.get \_changed
 
@@ -173,7 +177,7 @@ Initializes a new AutoNumber Field.
   This function is used by the API.
 </aside>
 
->AutoNumber.get \_changed
+>AutoNumber.get \_changed()
 
 ```javascript
 console.log(autoNum._changed);
@@ -201,7 +205,7 @@ A Boolean representing whether or not this Field has changed from its original v
 
 ### AutoNumber.get value
 
->AutoNumber.get value
+>AutoNumber.get value()
 
 ```javascript
 console.log(autoNum.value);
@@ -223,6 +227,8 @@ console.log(autoNum.value);
     </span>
   </p>
 </aside>
+
+<div><!-- spacing --></div>
 
 <div><!-- spacing --></div>
 
@@ -261,7 +267,7 @@ Use the Airtable iOS or Android app to scan barcodes.
 
 ### Barcode.constructor
 
->Barcode.constructor
+>Barcode.constructor(name, value [, config])
 
 ```javascript
   const barcode = new Barcode("Name", {
@@ -284,7 +290,6 @@ Initializes a new Barcode Field.
   <p class="parameter">
     <span class="name">value</span>
     <span class="type">Object</span>
-    <span class="optional"></span>
     <span class="description">
       An Object containing <code>text</code> and <code>type</code>.<br>
       <code>text</code>: (default: <code>""</code>) A String representing what the barcode translates to.<br>
@@ -293,9 +298,11 @@ Initializes a new Barcode Field.
   </p>
 </aside>
 
+<div><!-- spacing --></div>
+
 ### Barcode.get \_changed
 
->Barcode.get \_changed
+>Barcode.get \_changed()
 
 ```javascript
 console.log(barcode._changed);
@@ -325,7 +332,7 @@ false
 
 ### Barcode.get \_saveValue
 
->Barcode.get \_saveValue
+>Barcode.get \_saveValue()
 
 ```javascript
 const saveValue = barcode._saveValue;
@@ -362,7 +369,7 @@ that Airtable.com will accept (if it needs to convert anything).
 
 ### Barcode.get barcodeText
 
->Barcode.get barcodeText
+>Barcode.get barcodeText()
 
 ```javascript
 console.log(barcode.barcodeText);
@@ -386,9 +393,11 @@ This Field will always return a String.
   </p>
 </aside>
 
+<div><!-- spacing --></div>
+
 ### Barcode.get barcodeType
 
->Barcode.get barcodeType
+>Barcode.get barcodeType()
 
 ```javascript
 console.log(barcode.barcodeType);
@@ -412,9 +421,11 @@ This Field will always return a String.
   </p>
 </aside>
 
+<div><!-- spacing --></div>
+
 ### Barcode.get value
 
->Barcode.get value
+>Barcode.get value()
 
 ```javascript
 console.log(JSON.stringify(barcode.value, null, 2));
@@ -457,7 +468,7 @@ console.log(JSON.stringify(barcode.value, null, 2));
 
 ### Barcode.set barcodeText
 
->Barcode.set barcodeText
+>Barcode.set barcodeText(text)
 
 ```javascript
 barcode.barcodeText = 'hello';
@@ -466,7 +477,7 @@ barcode.barcodeText = 'hello';
 <aside class="parameters">
   <p class="title"><span>Parameters</span></p>
   <p class="parameter">
-    <span class="name">value</span>
+    <span class="name">text</span>
     <span class="type">String</span>
     <span class="description">
       (default: <code>""</code>) A String representing what the barcode translates to.
@@ -474,9 +485,11 @@ barcode.barcodeText = 'hello';
   </p>
 </aside>
 
+<div><!-- spacing --></div>
+
 ### Barcode.set barcodeType
 
->Barcode.set barcodeType
+>Barcode.set barcodeType(type)
 
 ```javascript
 barcode.barcodeType = 'hello';
@@ -485,7 +498,7 @@ barcode.barcodeType = 'hello';
 <aside class="parameters">
   <p class="title"><span>Parameters</span></p>
   <p class="parameter">
-    <span class="name">value</span>
+    <span class="name">type</span>
     <span class="type">String</span>
     <span class="description">
       (default: <code>'code128'</code>) A String which identifies the format of the barcode.
@@ -493,9 +506,11 @@ barcode.barcodeType = 'hello';
   </p>
 </aside>
 
+<div><!-- spacing --></div>
+
 ### Barcode.set value
 
->Barcode.set value
+>Barcode.set value(value)
 
 ```javascript
 barcode.value = 'hello';
@@ -527,6 +542,8 @@ A value type of String will set the `text` property of the barcode. An Object co
   </p>
 </aside>
 
+<div><!-- spacing --></div>
+
 ## Checkbox
 
 - Checkbox
@@ -534,9 +551,15 @@ A value type of String will set the `text` property of the barcode. An Object co
 
 A single checkbox that can be checked or unchecked.
 
+|  Functions                                   |
+| -------------------------------------------- |
+| [constructor](#checkbox-constructor)          |
+| [get value](#checkbox-get-value)              |
+| [set value](#checkbox-set-value)              |
+
 ### Checkbox.constructor
 
->Checkbox.constructor
+>Checkbox.constructor(name, value [, config])
 
 ```javascript
   const checkbox = new Checkbox("Name", true);
@@ -556,56 +579,304 @@ Initializes a new Checkbox Field.
   <p class="parameter">
     <span class="name">value</span>
     <span class="type">Boolean</span>
-    <span class="optional"></span>
     <span class="description">
-      Must be an Integer.
-    </span>
-  </p>
-</aside>
-
-### Checkbox.get value
-
->AutoNumber.get value
-
-```javascript
-console.log(autoNum.value);
-```
-
-> Output:
-
-```
-1
-```
-
-<aside class="parameters">
-  <p class="title"><span>Return Value</span></p>
-  <p class="parameter">
-    <span class="type">Integer</span>
-    <span class="type">null</span>
-    <span class="description">
-      An Integer, or null if the Field is empty.
+      A Boolean representing whether or not the checkbox is checked.
     </span>
   </p>
 </aside>
 
 <div><!-- spacing --></div>
 
-### AutoNumber.set value
+### Checkbox.get value
 
-<aside class="warning">
-  The value of this Field cannot be changed.
+>Checkbox.get value()
+
+```javascript
+console.log(checkbox.value);
+```
+
+> Output:
+
+```
+true
+```
+
+<aside class="parameters">
+  <p class="title"><span>Return Value</span></p>
+  <p class="parameter">
+    <span class="type">Boolean</span>
+    <span class="description">
+      A Boolean representing whether or not the checkbox is checked.
+    </span>
+  </p>
 </aside>
+
+<div><!-- spacing --></div>
+
+### Checkbox.set value
+
+>Checkbox.set value(value)
+
+```javascript
+checkbox.value = !checkbox.value;
+console.log(checkbox.value)
+```
+
+>Output:
+
+```
+true
+```
+
+Used to set the value of this Field. Setting this Field to `null` or `undefined` will result in the Field being set to false.
+
+<aside class="parameters">
+  <p class="title"><span>Parameters</span></p>
+  <p class="parameter">
+    <span class="name">value</span>
+    <span class="type">Boolean</span>
+    <span class="description">
+      A Boolean representing whether or not the checkbox is checked.<br>
+      '0' or 0 will be set to false.<br>
+      '1' or 1 will be set to true.
+    </span>
+  </p>
+</aside>
+
+<div><!-- spacing --></div>
 
 ## Collaborator
 
-lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
-lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
-lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
-lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
-lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
-lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
-lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
-lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
+- Collaborator
+    - [Field](#field)
+
+A collaborator field lets you add collaborators to your records. Collaborators can optionally be notified when they're added by enabling that option through the Airtable website.
+
+|  Functions                                   |
+| -------------------------------------------- |
+| [constructor](#collaborator-constructor)          |
+| [get isMulti](#collaborator-get-ismulti)       |
+| [get value](#collaborator-get-value)              |
+| [set isMulti](#collaborator-set-ismulti)       |
+| [set value](#collaborator-set-value)              |
+
+### Collaborator.constructor
+
+>Collaborator.constructor(name, value [, config])
+
+```javascript
+  const users = [
+    {
+      id: 'lkajsdlfkj1l3k',
+      name: 'Bob',
+      email: 'bob@email.com'
+    },
+    {
+      id: 'alsdkfj2lk34j5',
+      name: 'Susan',
+      email: 'susan@email.org'
+    }
+  ];
+
+  const config = {
+    multi: true
+  };
+
+  const collaborator = new Collaborator("Name", users, config);
+```
+
+Initializes a new Collaborator Field.
+
+<aside class="parameters">
+  <p class="title"><span>Parameters</span></p>
+  <p class="parameter">
+    <span class="name">name</span>
+    <span class="type">String</span>
+    <span class="description">
+      The name of the Field as it is on <a href="https://airtable.com">Airtable.com</a>.
+    </span>
+  </p>
+  <p class="parameter">
+    <span class="name">value</span>
+    <span class="type">Object</span>
+    <span class="description">
+      Should be a key-value Object representing an Airtable user.
+    </span>
+  </p>
+  <p class="parameter">
+    <span class="name">value</span>
+    <span class="type">Array</span>
+    <span class="description">
+      Should be an Array of key-value Objects representing an Airtable user.
+    </span>
+  </p>
+  <p class="parameter">
+    <span class="name">config</span>
+    <span class="type">Object</span>
+    <span class="optional"></span>
+    <span class="description">
+      A key-value Object representing the Field Definition.
+    </span>
+  </p>
+</aside>
+
+>Collaborator Object:
+
+```
+{
+  id: <String> Airtable User ID
+  email: <String> User's email
+  name: <String> User's full name
+}
+```
+
+You only need to send an Object containing an Airtable User ID or `email` to add a collaborator. Airtable looks for an `id` and then looks at the `email` if an `id` is not present. Sending a bad `id` and good `email` will fail; sending a good `id` and bad `email` will succeed; sending only an `id` will succeed; sending only an `email` will succeed; sending only a `name` will fail. Airtable does not look at the `name`.
+
+<aside class="parameters">
+  <p class="title"><span>Config</span></p>
+  <p class="parameter">
+    <span class="name">multi</span>
+    <span class="type">Boolean</span>
+    <span class="description">
+      default: <code>false</code><br>
+      A Boolean representing whether or not to allow multiple collaborators.
+    </span>
+  </p>
+</aside>
+
+<div><!-- spacing --></div>
+
+### Collaborator.get isMulti
+
+>Collaborator.get isMulti
+
+```javascript
+console.log(collaborator.isMulti);
+```
+
+>Output:
+
+```
+true
+```
+
+<aside class="parameters">
+  <p class="title"><span>Return Value</span></p>
+  <p class="parameter">
+    <span class="type">Boolean</span>
+    <span class="description">
+      A Boolean representing whether or not this field can accept an Array of collaborators.
+    </span>
+  </p>
+</aside>
+
+<div><!-- spacing --></div>
+
+### Collaborator.get value
+
+>Collaborator.get value()
+
+```javascript
+console.log(JSON.stringify(collaborator.value, null, 2));
+```
+
+> Output:
+
+```json
+[
+  {
+    "id": "lkajsdlfkj1l3k",
+    "name": "Bob",
+    "email": "bob@email.com"
+  },
+  {
+    "id": "alsdkfj2lk34j5",
+    "name": "Susan",
+    "email": "susan@email.org"
+  }
+]
+```
+
+<aside class="parameters">
+  <p class="title"><span>Return Value</span></p>
+  <p class="parameter">
+    <span class="type">Object</span>
+    <span class="type">Array</span>
+    <span class="type">immutable</span>
+    <span class="description">
+      If the field isMulti, this will return an Array of collaborators, or an empty Array.
+      Otherwise, the field will return a collaborator or null.
+    </span>
+  </p>
+</aside>
+
+<div><!-- spacing --></div>
+
+### Collaborator.set isMulti
+
+<aside class="warning">
+  This function cannot be used.
+</aside>
+
+<div><!-- spacing --></div>
+
+### Collaborator.set value
+
+>Collaborator.set value(value)
+
+```javascript
+collaborator.value = collaborator.value.concat({
+  id: 'lkajlk32jlkasdf0',
+  name: 'Greg',
+  email: 'greg@email.net'
+});
+
+console.log(JSON.stringify(collaborator.value, null, 2));
+```
+
+>Output:
+
+```json
+[
+  {
+    "id": "lkajsdlfkj1l3k",
+    "name": "Bob",
+    "email": "bob@email.com"
+  },
+  {
+    "id": "alsdkfj2lk34j5",
+    "name": "Susan",
+    "email": "susan@email.org"
+  },
+  {
+    "id": "lkajlk32jlkasdf0",
+    "name": "Greg",
+    "email": "greg@email.net"
+  }
+]
+```
+
+Used to set the value of this Field. Setting this Field to `null` or `undefined` will result in the Field being set to false.
+
+<aside class="parameters">
+  <p class="title"><span>Parameters</span></p>
+  <p class="parameter">
+    <span class="name">value</span>
+    <span class="type">Object</span>
+    <span class="description">
+      Should be a key-value Object representing an Airtable user.
+    </span>
+  </p>
+  <p class="parameter">
+    <span class="name">value</span>
+    <span class="type">Array</span>
+    <span class="description">
+      Should be an Array of key-value Objects representing an Airtable user.
+    </span>
+  </p>
+</aside>
+
+<div><!-- spacing --></div>
 
 ## Count
 
