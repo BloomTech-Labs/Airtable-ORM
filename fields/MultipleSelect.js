@@ -40,20 +40,37 @@ class MultipleSelect extends Field {
     this.type = 'Multiple select';
   }
 
+  /* get options
+   * Return:
+   *   An Array of Strings. The options that were defined in the config.
+   */
   get options() {
     return [...this.config.options];
   }
 
+  /* get value
+   * Return:
+   *   An immutable Array of the selected options.
+   */
   get value() {
     if(!Array.isArray(this._value))
-      this._value = this._deepFreezeValue([]);
-    return this._deepFreezeValue(this._value === 0 || this._value === false ? this._value : this._value || null);
+      this._value = [];
+    return this._deepFreezeValue(this._value);
   }
 
+  /* set options
+   * This function cannot be used.
+   */
   set options(_){
     return;
   }
 
+  /* set value
+   * Parameters:
+   *   value: <Array>
+   *     An Array of options defined in the config. Selecting an option that does not exist
+   *     in the config will throw an error.
+   */
   set value(value = null) {
     if (value === null) {
       return this._value = this._deepFreezeValue([]);
@@ -68,6 +85,11 @@ class MultipleSelect extends Field {
     this._value = this._deepFreezeValue(value);
   }
 
+  /* delectOption(...selections)
+   * Parameters:
+   *   ...selections: <String>
+   *     The options to deselect.
+   */
   deselectOption(...selections) {
     const value = [];
     this.value.forEach((option) => {
@@ -77,10 +99,22 @@ class MultipleSelect extends Field {
     this.value = value;
   }
 
+  /* optionIsSelected(option)
+   * Parameters:
+   *   option: <String>
+   *     The options in question.
+   * Return:
+   *   A Boolean representing whether or not this option has been selected.
+   */
   optionIsSelected(option) {
     return this.value.indexOf(option) >= 0;
   }
 
+  /* selectOption(...selections)
+   * Parameters:
+   *   ...selections: <String>
+   *     The options to select.
+   */
   selectOption(...selections) {
     const value = [...this.value];
     selections.forEach((option) => {

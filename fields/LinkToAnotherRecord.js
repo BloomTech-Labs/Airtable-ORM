@@ -31,6 +31,13 @@ class LinkToAnotherRecord extends Field {
     this.type = 'Link to another record';
   }
 
+  /* get _originalValue
+   * Return:
+   *   The original value that was passed into this Field or the value that was in this Field after a
+   *   successful save operation. This function is used to determine if a save request should be sent
+   *   for this Field. This will return either a String Record ID or an Array of Record IDs depending
+   *   on whether or not this Field isMulti.
+   */
   get _originalValue() {
     const value = this._originalValue_;
     if (this.isMulti) {
@@ -46,6 +53,11 @@ class LinkToAnotherRecord extends Field {
     return value;
   }
 
+  /* get _saveValue
+   * Return:
+   *   This function is used by the API to convert the value stored in this field over to a value
+   *   that Airtable.com will accept (if it needs to convert anything).
+   */
   get _saveValue() {
     if (this.value === undefined || this.value === null)
       return null;
@@ -66,6 +78,11 @@ class LinkToAnotherRecord extends Field {
     this._error('Encountered a bad value during save conversion. Expected a String or Record Object.', this.value, true);
   }
 
+  /* get isLoaded
+   * Return:
+   *   A Boolean representing whether or not all the records in this Field's value have been initialized.
+   *   If query(setupLinks = false) then this will return false as the value(s) will be Record ID String(s).
+   */
   get isLoaded() {
     let value = this.value;
     if (this.isMulti) {
@@ -83,10 +100,19 @@ class LinkToAnotherRecord extends Field {
     return this._isRecord(value);
   }
 
+  /* get isMulti
+   * Return:
+   *   A Boolean representing whether ot not this Field accepts multiple Records.
+   */
   get isMulti() {
     return this.config.multi === true;
   }
 
+  /* get value
+   * Return:
+   *   An immutable Array of Records or Record IDs or a single Record or Record ID depending on whether or not the
+   *   Field isMulti.
+   */
   get value() {
     if (this.isMulti) {
       if (!Array.isArray(this._value))
@@ -94,21 +120,37 @@ class LinkToAnotherRecord extends Field {
     }
     if (this._value === undefined || this._value === null)
       return null;
-    return this._deepFreezeValue(this._value);
+    return this.isMulti ? Object.freeze(this._value) : this._value;
   }
 
+  /* set _originalValue
+   * Parameters:
+   *   value: <Anything>
+   * This function should not be used as it only exists for the API to use.
+   * It sets the initial original value of the field and is used to update it
+   * whenever a save operation is successful.
+   */
   set _originalValue(value) {
     this._originalValue_ = value;
   }
 
+  /* set _saveValue
+   * This function cannot be used.
+   */
   set _saveValue(_) {
     return;
   }
 
+  /* set isLoaded
+   * This function cannot be used.
+   */
   set isLoaded(_) {
     return;
   }
 
+  /* set isMulti
+   * This function cannot be used.
+   */
   set isMulti(_) {
     this._warn(
       'You cannot change whether or not this Field is multi through this API. ' +
@@ -117,6 +159,10 @@ class LinkToAnotherRecord extends Field {
     );
   }
 
+  /* set value
+   * Parameters:
+   *   value: <String> <Record> <Array of Strings> <Array of Records>
+   */
   set value(value = null) {
     if (value === null)
       return this._value = this.isMulti ? [] : null;
@@ -137,6 +183,15 @@ class LinkToAnotherRecord extends Field {
     this._error('Expected a String or Record Object.', value);
   }
 
+  /* toString(includeName)
+   * Parameters:
+   *   includeName: <Boolean>
+   *     Whether or not to include the name of the Field in the String.
+   * Return:
+   *   A String of the field's name and value unless includeName is set to false.
+   *     "name: [value]"
+   *     "name: value"
+   */
   toString(includeName = true) {
     if (Array.isArray(this.value))
       return `${includeName === true ? `${this.name}: ` : ''}${JSON.stringify(this.value.map((record) => {

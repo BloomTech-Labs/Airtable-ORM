@@ -22,7 +22,8 @@ const NumberField = require('./NumberField');
  *   }]
  * Strict:
  *   Throws an error if the value exceeds the precision. Otherwise it will floor
- *   the value at the specified precision level.
+ *   the value at the specified precision level. Value must be a number (ie,
+ *   setting the value to '45%' will throw an error)
  */
 class Percent extends NumberField {
   constructor(name, value = null, config = {}) {
@@ -52,6 +53,10 @@ class Percent extends NumberField {
     this._type = 'Percent';
   }
 
+  /* get value
+   * Return:
+   *   A Number or Null.
+   */
   get value() {
     let decimal = super.value;
     if (isNaN(decimal))
@@ -59,10 +64,27 @@ class Percent extends NumberField {
     return decimal;
   }
 
+  /* set value
+   * Refer to NumberField.set value
+   */
   set value(value) {
-    super.value = value;
+    let percent = value;
+    if (typeof value === 'string') {
+      if (this.isStrict)
+        return this._error('value must be a number.', value);
+      percent = percent.replace(/%/g, '');
+    }
+    super.value = percent;
   }
 
+  /* toString(includeName)
+   * Parameters:
+   *   includeName: <Boolean>
+   *     Whether or not to include the name of the Field in the String.
+   * Return:
+   *   A String of the field's name and value unless includeName is set to false.
+   *     "name: value%"
+   */
   toString(includeName = true) {
     return `${includeName === true ? `${this.name}: ` : ''}${isNaN(this.value) || this.value === null ? this.value : `${this.value}%`}`;
   }

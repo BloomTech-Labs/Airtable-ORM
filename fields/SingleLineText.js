@@ -22,14 +22,28 @@ class SingleLineText extends Field {
     this.type = 'Single line text';
   }
 
+  /* get value
+   * Return:
+   *   A String.
+   */
   get value() {
-    return this._value || null;
+    return this._value || '';
   }
 
+  /* set value
+   * Parameters:
+   *   value: <String>
+   *     A String to set the value of this Field to. undefined and null will be set to
+   *     an empty String. Anything else will be set to a String via a template literal,
+   *     except for in Strict.
+   * Strict:
+   *   An error will be throw if the value is anything other than a String. undefined and null
+   *   will still be set to empty Strings.
+   */
   set value(value = null) {
     if (value === null)
       value = '';
-    if (typeof value !== 'string' && this.config.__strict__ === true)
+    if (typeof value !== 'string' && this.isStrict)
       return this._error(`'value' must be a String!`, value);
     this._value = `${value}`;
   }

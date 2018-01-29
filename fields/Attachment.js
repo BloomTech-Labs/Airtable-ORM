@@ -45,7 +45,7 @@ class Attachment extends Field {
    */
   set value(value = null) {
     if (value === null || (Array.isArray(value) && value.length === 0))
-      return this._value = value;
+      return this._value = Object.freeze([]);
     const checkValue = () => {
       if (Array.isArray(value)) {
         for (let i = 0; i < value.length; i++)

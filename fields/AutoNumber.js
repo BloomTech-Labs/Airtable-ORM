@@ -34,10 +34,11 @@ class AutoNumber extends Field {
 
   /* get value
    * Return: <Integer>/<null>
-   *   An Integer or null if the field is empty (which should never happen with this field).
+   *   An Integer. Will return -1 if this Field is empty.
+   *   This Field should never be empty so a value of -1 would signify a problem somewhere else.
    */
   get value() {
-    return this._value === undefined || this._value === null ? null : this._value;
+    return this._value === undefined || this._value === null ? -1 : this._value;
   }
 
   /* set _changed

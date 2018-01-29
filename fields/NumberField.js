@@ -34,8 +34,6 @@ class NumberField extends Field {
       config.precision = 1;
     if (config.allowNegative !== true)
       config.allowNegative = false;
-    if (config.__strict__ !== true)
-      config.__strict__ = false;
 
     if (isNaN(config.precision)) {
       super(name, value, config);
@@ -57,10 +55,22 @@ class NumberField extends Field {
     this.type = 'Number';
   }
 
+  /* get value
+   * Return:
+   *   Returns a Number or null.
+   */
   get value() {
     return this._value === undefined ? null : this._value;
   }
 
+  /* set value
+   * Parameters:
+   *   value: <Number> <String>
+   *     This will convert Strings to Numbers except for in strict.
+   *     Floats will be floored if the config defines this as an Integer, except for in strict.
+   *     Floats longer than the precision defined in the config will be floored
+   *     at the correct precision level, except for in strict.
+   */
   set value(value = null) {
     if (value === null)
       return this._value = null;
@@ -69,7 +79,7 @@ class NumberField extends Field {
     if (isNaN(this.config.precision))
       return this._error('This Field had its precision set to something which was not a number.', config.precision);
     value = Number(value);
-    if (this.config__strict__ === true && (value !== this._cutNumber(value, this.config.precision)))
+    if (this.isStrict && (value !== this._cutNumber(value, this.config.precision)))
       return this._error(`This Field has a precision of '${this.config.precision}' which was exceeded.`, value);
     if (this.config.format === 'Integer')
       value = ~~value;
@@ -86,6 +96,15 @@ class NumberField extends Field {
     this._value = value;
   }
 
+  /* _cutNumber(number, precision)
+   * Parameters:
+   *   number: <Number>
+   *     Will convert a String to a Number.
+   *   precision: <Integer>
+   *     Will convert a String to a Number and will floor Floats.
+   * Return:
+   *   A Number that has been floored to the specified precision level.
+   */
   _cutNumber(number, precision) {
     // toFixed rounds the number. _cutNumber will drop anything after the precision defined
     // in the field config.

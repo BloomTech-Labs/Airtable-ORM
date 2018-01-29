@@ -59,7 +59,7 @@ class Collaborator extends Field {
   get value() {
     if ((this._value === undefined || this._value === null) && this.isMulti)
       this._value = [];
-    return this._deepFreezeValue(this._value || null);
+    return this._deepFreezeValue(this._value || this.isMulti ? [] : null);
   }
 
   set isMulti(value) {
@@ -71,9 +71,10 @@ class Collaborator extends Field {
 
   /* set value
    * Parameters:
-   *   value: <Array>/<Object>
-   *   If the field isMulti, this will return an Array of collaborators, or an empty Array.
-   *   Otherwise, the field will return a collaborator or null.
+   *   value: <Object>
+   *     Should be a key-value Object representing an Airtable user.
+   *   value: <Array>
+   *     Should be an Array of key-value Objects representing an Airtable user.
    *   Example collaborator:
    *     {
    *       id: <String> Airtable User ID

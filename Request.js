@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 class Request {
-  /* types
+  /* static get types
    * get
    * post
    * dangerouslyPut:
@@ -20,7 +20,7 @@ class Request {
     }
   }
 
-  /* get printRequests
+  /* static get printRequests
    * Whether or not to print requests as they are being sent. Prints the URL, headers, parameters, and data being sent
    * as well as the Type of the Request.
    * return:
@@ -30,7 +30,7 @@ class Request {
     return this._printRequests || false;
   }
 
-  /* set printRequests
+  /* static set printRequests
    * Whether or not to print requests as they are being sent. Prints the URL, headers, parameters, and data being sent
    * as well as the Type of the Request.
    * Parameters:
@@ -43,7 +43,7 @@ class Request {
     this._printRequests = value;
   }
 
-  /* get
+  /* static get(config, success, fail)
    * Parameters: (Reference constructor docs for more information)
    *   config
    *   success
@@ -55,7 +55,7 @@ class Request {
     return new Request(Request.types.get, config, success, fail)
   }
 
-  /* post
+  /* static post(config, success, fail)
    * Parameters: (Reference constructor docs for more information)
    *   config
    *   success
@@ -67,7 +67,7 @@ class Request {
     return new Request(Request.types.post, config, success, fail)
   }
 
-  /* dangerouslyPut
+  /* static dangerouslyPut(config, success, fail)
    * If you use put to update a record, it will clear any field not included in the put request.
    * Parameters: (Reference constructor docs for more information)
    *   config
@@ -80,7 +80,7 @@ class Request {
     return new Request(Request.types.dangerouslyPut, config, success, fail)
   }
 
-  /* patch
+  /* static patch(config, success, fail)
    * Parameters: (Reference constructor docs for more information)
    *   config
    *   success
@@ -92,7 +92,7 @@ class Request {
     return new Request(Request.types.patch, config, success, fail)
   }
 
-  /* delete
+  /* static delete(config, success, fail)
    * Parameters: (Reference constructor docs for more information)
    *   config
    *   success
@@ -163,12 +163,14 @@ class Request {
     this.fail = fail;
   }
 
-  /* send()
+  /* send(key)
    * Sends the request.
    * Parameters:
-   * key: The API key to use for the request.
+   * key: <String>
+   *   The API key to use for the request.
    * return:
-   *   A Promise Object.
+   *   A Promise Object which resolves the response it gets back and rejects any errors.
+   *   Will also call the success and fail functions passed in during initialization.
    */
   send(key) {
     if (typeof key !== 'string')

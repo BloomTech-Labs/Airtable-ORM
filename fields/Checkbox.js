@@ -21,7 +21,7 @@ class Checkbox extends Field {
    *   Whether or not the checkbox is checked.
    */
   get value() {
-    return this._value || false;
+    return this._value === true;
   }
 
   /* set value
@@ -31,13 +31,11 @@ class Checkbox extends Field {
    *     undefined or null will be set to false.
    *     '0' or 0 will be set to false.
    *     '1' or 1 will be set to true.
-   *     In strict mode, anything that isn't a boolean
-   *     besides undefined or null will throw an error.
    */
   set value(value) {
     if (value === undefined || value === null)
       return this._value = false;
-    if (this.config.__strict__ === true && typeof value !== 'boolean')
+    if (this.isStrict && typeof value !== 'boolean')
       return this._error(`'value' must be a boolean.`, value);
     if (`${value}` === '0' || `${value}` === '1')
       value = !!Number(value);

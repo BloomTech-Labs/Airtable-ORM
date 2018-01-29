@@ -1,9 +1,11 @@
 {
   "name": "airtable",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Hook for Airtable",
   "main": "Airtable.js",
   "author": "Jourdan Clark",
+  "repository": "https://github.com/Lambda-School-Labs/Airtable-ORM",
+  "homepage": "https://lambda-school-labs.github.io/Airtable-ORM/",
   "dependencies": {
     "axios": "^0.17.1"
   }

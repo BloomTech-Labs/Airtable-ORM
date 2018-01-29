@@ -25,7 +25,9 @@ const NumberField = require('./NumberField');
  *   }]
  * Strict:
  *   Throws an error if the value exceeds the precision. Otherwise it will floor
- *   the value at the specified precision level.
+ *   the value at the specified precision level. Throws an error if the value isn't
+ *   a number (ie, if it has the currency symbol attached to it, which would also
+ *   mean that it's a String).
  */
 class Currency extends NumberField {
   constructor(name, value, config = {}) {
@@ -64,6 +66,8 @@ class Currency extends NumberField {
     let curr = value;
     if (this.config.precision < 0 || this.config.precision > 8)
       return this._error('Unknown precision.', this.config.precision);
+    if (this.isStrict && typeof curr === 'string')
+      return this._error('value must be a number.', value);
     if (isNaN(curr) && typeof curr === 'string' && curr.startsWith(this.config.currencySymbol))
       curr = Number(curr.substring(this.config.currencySymbol.length).trim());
     if (isNaN(curr))
@@ -72,6 +76,9 @@ class Currency extends NumberField {
   }
 
   /* toString
+   * Parameters:
+   *   includeName: <Boolean>
+   *     Whether or not to include the name of the Field in the String.
    * Return: <String>
    *   Returns a string in the following format 'My Money: $5.10' where 'My Money' is the name of the field and
    *   $ and .10 are the currencySymbol and precision defined in the config.

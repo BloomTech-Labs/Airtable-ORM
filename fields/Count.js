@@ -27,14 +27,13 @@ class Count extends NumberField {
     config.format = 'Integer';
     config.allowNegative = false;
     config.precision = 0;
-    config.__strict__ = false;
     super(name, value, config);
     this._type = 'Count';
   }
 
   /* get changed
    * Return: <Boolean>
-   *   A boolean representing whether or not this field has changed from its original value.
+   *   A Boolean representing whether or not this field has changed from its original value.
    *   This function is used by the API.
    */
   get _changed() {
@@ -43,7 +42,7 @@ class Count extends NumberField {
 
   /* get isLinked
    * Return: <Boolean>
-   *   A boolean representing whether or not this field has been properly linked to a LinkToAnotherRecord field.
+   *   A Boolean representing whether or not this field has been properly linked to a LinkToAnotherRecord field.
    */
   get isLinked() {
     return this.link instanceof LinkToAnotherRecord;

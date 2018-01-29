@@ -19,18 +19,35 @@ class Rollup extends Field {
     this.type = 'Rollup';
   }
 
+  /* get _changed
+   * Return:
+   *   Will Always return false.
+   *   This function is used by the API.
+   */
   get _changed() {
     return false;
   }
 
+  /* get value
+   * Return:
+   *   This field is not fully supported and will return whatever was passed into it.
+   */
   get value() {
-    return this._value === 0 || this._value === false ? this._value : this._value || null;
+    return this._value;
   }
 
+  /* set _changed
+   * This function cannot be used.
+   */
   set _changed(_) {
     return;
   }
 
+
+  /* set value
+   * Return:
+   *   This field is not fully supported and can be set to anything.
+   */
   set value(value) {
     this._value = value;
   }

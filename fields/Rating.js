@@ -62,16 +62,27 @@ class Rating extends NumberField {
     this._type = 'Rating';
   }
 
+  /* get value
+   * Return:
+   *   An Integer.
+   */
   get value() {
-    return super.value || 0;
+    return ~~super.value;
   }
 
+  /* set value
+   * Parameters:
+   *   value: <Number>
+   *     Refer to NumberField.set value
+   *     If the value is set to a number less than 0 or greater than the max value defined in the config, an error
+   *     will be thrown. undefined or null will be set to 0.
+   */
   set value(value = null) {
     if (value === null)
       value = 0;
     if (isNaN(value))
       return this._error(`'value' was not set to a Number.`, value)
-    if (this.config.__strict__ === true && (typeof value !== 'number' || value !== ~~value || value < 0 || value > this.config.max))
+    if (this.isStrict && (typeof value !== 'number' || value !== ~~value || value < 0 || value > this.config.max))
       return this._error(`'value' must be an Integer no less than 0 and no greater than the max value defined in the config.`, value);
     value = ~~Number(value);
     if (value < 0)
@@ -81,6 +92,10 @@ class Rating extends NumberField {
     super.value = value;
   }
 
+  /* toStars()
+   * Return:
+   *   A String of full/empty stars representing the rating. (ie. "★★★✰✰")
+   */
   toStars() {
     if (isNaN(this.value))
       this.value = 0;

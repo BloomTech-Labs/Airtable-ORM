@@ -42,6 +42,9 @@ const Field = require('./Field');
  *       12 (12:03:30am)
  *       24 (00:00:30)
  *   }
+ * Strict:
+ *   Will throw an error if the value is set to anything other than a Date Object.
+ *   undefined or null will still clear the field.
  */
 class DateField extends Field {
   /* static get days
@@ -171,12 +174,21 @@ class DateField extends Field {
     return `${this._saveValue}` !== `${this.config.includeTime ? this._originalValue.toISOString() : this._originalValue.toISOString().split('T')[0]}`;
   }
 
+  /* get _saveValue
+   * Return:
+   *   This function is used by the API to convert the value stored in this field over to a value
+   *   that Airtable.com will accept (if it needs to convert anything).
+   */
   get _saveValue() {
     if (!(this.value instanceof Date))
       return this.value;
     return this.config.includeTime ? this.value.toISOString() : this.value.toISOString().split('T')[0];
   }
 
+  /*
+   * Return:
+   *  Returns a Date Object or null.
+   */
   get value() {
     return this._value || null;
   }
@@ -195,9 +207,16 @@ class DateField extends Field {
     return;
   }
 
+  /* set value
+   * Parameters:
+   *   value: <Date> <String>
+   * undefined or null will clear this field.
+   */
   set value(value = null) {
     if (value === null)
       return this._value = null;
+    if (typeof value === 'string' && this.isStrict)
+      return this._error('value must be a Date Object.', value);
     if (typeof value === 'string') {
       let date = new Date(value);
       value = value.trim();
@@ -213,6 +232,21 @@ class DateField extends Field {
     }
   }
 
+
+  /* toString(includeName)
+   * Parameters:
+   *   includeName: <Boolean>
+   *     Whether or not to include the name of the Field in the String.
+   * Return:
+   *   A String of the field's name and value unless includeName is set to false.
+   *     "name: value"
+   * The config for this field decides how the Date will be converted to a string.
+   * 'Friendly': "Tuesday, November 1, 2007 12:04:50pm"
+   * 'US': "Tue 11/01/2006 12:04:50pm"
+   * 'Local': Same as US
+   * 'European': "Tue 01/11/2006 12:04:50pm"
+   * 'ISO': "Tue 11-01-2006 12:04:50pm"
+   */
   toString(includeName = true) {
     if (this.config.dateFormat === 'Date')
         return super.toString(includeName);

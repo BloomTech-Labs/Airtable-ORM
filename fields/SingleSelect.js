@@ -31,13 +31,25 @@ class SingleSelect extends MultipleSelect {
     this._type = 'Single select';
   }
 
+  /* get value
+   * Return:
+   *   A String.
+   */
   get value() {
     if (super.value.length > 1)
       super.value = [super.value[0]];
     const value = super.value[0];
-    return value || null;
+    return value || '';
   }
 
+  /* set value
+   * Parameters:
+   *   value: <String>
+   *     An option defined in the config.
+   *     An option not defined in the config will throw an error.
+   *     Anything other than a String will throw an error.
+   *     undefined and null will clear the field.
+   */
   set value(value = null) {
     if (value === null)
       return super.value = null;
@@ -48,15 +60,34 @@ class SingleSelect extends MultipleSelect {
     super.value = [value];
   }
 
+  /* deselectOption(option)
+   * Parameters:
+   *   option: <String>
+   *     The option to deselect.
+   * Deselects the option if it is selected.
+   */
   deselectOption(option) {
     if (this.optionIsSelected(option))
       this.value = null;
   }
 
+  /* optionIsSelected(option)
+   * Parameters:
+   *   option: <String>
+   *     The option in question.
+   * Return:
+   *   A Boolean representing whether or not the option is selected.
+   */
   optionIsSelected(option) {
     return option === this.value;
   }
 
+  /* selectOption(option)
+   * Parameters:
+   *   option: <String>
+   *     The option to select.
+   * Selects the option if it is not selected.
+   */
   selectOption(option) {
     if (!this.optionIsSelected(option))
       this.value = option;

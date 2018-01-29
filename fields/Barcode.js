@@ -13,6 +13,9 @@ const Field = require('./Field');
  *       default: 'code128'
  *       The type of barcode you are using.
  *   }
+ * Strict:
+ *   undefined and null barcode text will still be set to an empty String, but anything else
+ *   that is not a String will throw an error.
  */
 class Barcode extends Field {
   constructor(name, { text = '', type = 'code128', ...rest } = {}, config) {
@@ -63,7 +66,7 @@ class Barcode extends Field {
   get barcodeText() {
     if (this.value === null)
       this._value = this.defaultBarcode();
-    return this._value.text;
+    return this._value.text || '';
   }
 
   /* get barcodeType
@@ -76,7 +79,7 @@ class Barcode extends Field {
   get barcodeType() {
     if (this.value === null)
       this._value = this.defaultBarcode();
-    return this._value.type;
+    return this._value.type || '';
   }
 
   /* get value
@@ -126,10 +129,13 @@ class Barcode extends Field {
   set barcodeText(value = null) {
     if (this._value === undefined || this._value === null)
       this._value = this.defaultBarcode();
-    if (value === null)
+    if (value === null) {
       this._value.text = '';
-    else
-      this._value.text = `${value}`;
+    } else {
+      if (typeof value !== 'string' && this.isStrict)
+        return this._error(`'value' must either be a string to set the text or a key-value object { text, type }.`, value);
+      this.barcodeText = `${value}`;
+    }
   }
 
   /* set barcodeText
@@ -182,9 +188,9 @@ class Barcode extends Field {
       this.barcodeText = text;
       this.barcodeType = type;
     } else {
-      if (typeof value !== 'string')
+      if (typeof value !== 'string' && this.isStrict)
         return this._error(`'value' must either be a string to set the text or a key-value object { text, type }.`, value);
-      this.barcodeText = value;
+      this.barcodeText = `${value}`;
     }
   }
 
