@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta property="og:image" content="http://jourdanclark.com:4567/favicon/android-icon-192x192.png"/>
-    <meta property="og:image:secure_url" content="https://jourdanclark.com:4567/favicon/android-icon-192x192.png" />
+    <meta property="og:image" content="http://lambda-school-labs.github.io/Airtable-ORM/favicon/android-icon-192x192.png"/>
+    <meta property="og:image:secure_url" content="https://lambda-school-labs.github.io/Airtable-ORM/favicon/android-icon-192x192.png" />
     <meta property="og:title" content="Airtable ORM"/>
     <meta property="og:description" content="Welcome to the Airtable ORM by LambdaSchool! This is a wrapper for the Airtable REST API and was inspired by Mongoose. Pretty much everything has been abstracted away to allow you to start interacting with your data with as little setup as possible."/>
 
@@ -604,7 +604,7 @@ lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
 </aside>
 
 <blockquote>
-<p>Attachment.constructor</p>
+<p>Attachment.constructor(name, value [, config])</p>
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code>  <span class="kr">const</span> <span class="nx">attachment</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Attachment</span><span class="p">(</span><span class="s2">"Name"</span><span class="p">,</span> <span class="p">[]);</span>
 </code></pre>
@@ -622,15 +622,16 @@ lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
   <p class="parameter">
     <span class="name">value</span>
     <span class="type">Array</span>
-    <span class="optional"></span>
     <span class="description">
       Should be an Array of key-value Objects representing an Attachment.
     </span>
   </p>
 </aside>
+
+<div><!-- spacing --></div>
 <h3 id='attachment-get-value'>Attachment.get value <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h3>
 <blockquote>
-<p>Attachment.get value</p>
+<p>Attachment.get value()</p>
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">attachment</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
 </code></pre>
@@ -675,7 +676,7 @@ lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
 <div><!-- spacing --></div>
 <h3 id='attachment-set-value'>Attachment.set value <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h3>
 <blockquote>
-<p>Attachment.set value</p>
+<p>Attachment.set value(value)</p>
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code><span class="nx">attachment</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">attachment</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
 </code></pre>
@@ -691,6 +692,8 @@ lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
     </span>
   </p>
 </aside>
+
+<div><!-- spacing --></div>
 <h2 id='autonumber'>AutoNumber <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h2>
 <ul>
 <li>AutoNumber
@@ -729,7 +732,7 @@ lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
 </aside>
 
 <blockquote>
-<p>AutoNumber.constructor</p>
+<p>AutoNumber.constructor(name, value [, config])</p>
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code>  <span class="kr">const</span> <span class="nx">autoNum</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AutoNumber</span><span class="p">(</span><span class="s2">"Name"</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
 </code></pre>
@@ -747,19 +750,20 @@ lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
   <p class="parameter">
     <span class="name">value</span>
     <span class="type">Integer</span>
-    <span class="optional"></span>
     <span class="description">
       Must be an Integer.
     </span>
   </p>
 </aside>
+
+<div><!-- spacing --></div>
 <h3 id='autonumber-get-_changed'>AutoNumber.get _changed <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h3>
 <aside class="notice">
   This function is used by the API.
 </aside>
 
 <blockquote>
-<p>AutoNumber.get _changed</p>
+<p>AutoNumber.get _changed()</p>
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">autoNum</span><span class="p">.</span><span class="nx">_changed</span><span class="p">);</span>
 </code></pre>
@@ -783,7 +787,7 @@ lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
 <div><!-- spacing --></div>
 <h3 id='autonumber-get-value'>AutoNumber.get value <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h3>
 <blockquote>
-<p>AutoNumber.get value</p>
+<p>AutoNumber.get value()</p>
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">autoNum</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
 </code></pre>
@@ -802,6 +806,8 @@ lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
     </span>
   </p>
 </aside>
+
+<div><!-- spacing --></div>
 
 <div><!-- spacing --></div>
 <h3 id='autonumber-set-_changed'>AutoNumber.set _changed <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h3>
@@ -864,7 +870,7 @@ lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
 </tbody></table>
 <h3 id='barcode-constructor'>Barcode.constructor <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h3>
 <blockquote>
-<p>Barcode.constructor</p>
+<p>Barcode.constructor(name, value [, config])</p>
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code>  <span class="kr">const</span> <span class="nx">barcode</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Barcode</span><span class="p">(</span><span class="s2">"Name"</span><span class="p">,</span> <span class="p">{</span>
     <span class="na">text</span><span class="p">:</span> <span class="s1">'text'</span><span class="p">,</span>
@@ -885,7 +891,6 @@ lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
   <p class="parameter">
     <span class="name">value</span>
     <span class="type">Object</span>
-    <span class="optional"></span>
     <span class="description">
       An Object containing <code>text</code> and <code>type</code>.<br>
       <code>text</code>: (default: <code>""</code>) A String representing what the barcode translates to.<br>
@@ -893,9 +898,11 @@ lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
     </span>
   </p>
 </aside>
+
+<div><!-- spacing --></div>
 <h3 id='barcode-get-_changed'>Barcode.get _changed <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h3>
 <blockquote>
-<p>Barcode.get _changed</p>
+<p>Barcode.get _changed()</p>
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">barcode</span><span class="p">.</span><span class="nx">_changed</span><span class="p">);</span>
 </code></pre>
@@ -921,7 +928,7 @@ lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
 <div><!-- spacing --></div>
 <h3 id='barcode-get-_savevalue'>Barcode.get _saveValue <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h3>
 <blockquote>
-<p>Barcode.get _saveValue</p>
+<p>Barcode.get _saveValue()</p>
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code><span class="kr">const</span> <span class="nx">saveValue</span> <span class="o">=</span> <span class="nx">barcode</span><span class="p">.</span><span class="nx">_saveValue</span><span class="p">;</span>
 </code></pre>
@@ -955,7 +962,7 @@ that Airtable.com will accept (if it needs to convert anything).</p>
 <div><!-- spacing --></div>
 <h3 id='barcode-get-barcodetext'>Barcode.get barcodeText <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h3>
 <blockquote>
-<p>Barcode.get barcodeText</p>
+<p>Barcode.get barcodeText()</p>
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">barcode</span><span class="p">.</span><span class="nx">barcodeText</span><span class="p">);</span>
 </code></pre>
@@ -975,9 +982,11 @@ that Airtable.com will accept (if it needs to convert anything).</p>
     </span>
   </p>
 </aside>
+
+<div><!-- spacing --></div>
 <h3 id='barcode-get-barcodetype'>Barcode.get barcodeType <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h3>
 <blockquote>
-<p>Barcode.get barcodeType</p>
+<p>Barcode.get barcodeType()</p>
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">barcode</span><span class="p">.</span><span class="nx">barcodeType</span><span class="p">);</span>
 </code></pre>
@@ -997,9 +1006,11 @@ that Airtable.com will accept (if it needs to convert anything).</p>
     </span>
   </p>
 </aside>
+
+<div><!-- spacing --></div>
 <h3 id='barcode-get-value'>Barcode.get value <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h3>
 <blockquote>
-<p>Barcode.get value</p>
+<p>Barcode.get value()</p>
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">barcode</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
 </code></pre>
@@ -1034,39 +1045,43 @@ that Airtable.com will accept (if it needs to convert anything).</p>
 </aside>
 <h3 id='barcode-set-barcodetext'>Barcode.set barcodeText <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h3>
 <blockquote>
-<p>Barcode.set barcodeText</p>
+<p>Barcode.set barcodeText(text)</p>
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code><span class="nx">barcode</span><span class="p">.</span><span class="nx">barcodeText</span> <span class="o">=</span> <span class="s1">'hello'</span><span class="p">;</span>
 </code></pre>
 <aside class="parameters">
   <p class="title"><span>Parameters</span></p>
   <p class="parameter">
-    <span class="name">value</span>
+    <span class="name">text</span>
     <span class="type">String</span>
     <span class="description">
       (default: <code>""</code>) A String representing what the barcode translates to.
     </span>
   </p>
 </aside>
+
+<div><!-- spacing --></div>
 <h3 id='barcode-set-barcodetype'>Barcode.set barcodeType <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h3>
 <blockquote>
-<p>Barcode.set barcodeType</p>
+<p>Barcode.set barcodeType(type)</p>
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code><span class="nx">barcode</span><span class="p">.</span><span class="nx">barcodeType</span> <span class="o">=</span> <span class="s1">'hello'</span><span class="p">;</span>
 </code></pre>
 <aside class="parameters">
   <p class="title"><span>Parameters</span></p>
   <p class="parameter">
-    <span class="name">value</span>
+    <span class="name">type</span>
     <span class="type">String</span>
     <span class="description">
       (default: <code>'code128'</code>) A String which identifies the format of the barcode.
     </span>
   </p>
 </aside>
+
+<div><!-- spacing --></div>
 <h3 id='barcode-set-value'>Barcode.set value <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h3>
 <blockquote>
-<p>Barcode.set value</p>
+<p>Barcode.set value(value)</p>
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code><span class="nx">barcode</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="s1">'hello'</span><span class="p">;</span>
 <span class="nx">barcode</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="p">{</span>
@@ -1095,6 +1110,8 @@ that Airtable.com will accept (if it needs to convert anything).</p>
     </span>
   </p>
 </aside>
+
+<div><!-- spacing --></div>
 <h2 id='checkbox'>Checkbox <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h2>
 <ul>
 <li>Checkbox
@@ -1105,9 +1122,25 @@ that Airtable.com will accept (if it needs to convert anything).</p>
 </ul>
 
 <p>A single checkbox that can be checked or unchecked.</p>
+
+<table><thead>
+<tr>
+<th>Functions</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><a href="#checkbox-constructor">constructor</a></td>
+</tr>
+<tr>
+<td><a href="#checkbox-get-value">get value</a></td>
+</tr>
+<tr>
+<td><a href="#checkbox-set-value">set value</a></td>
+</tr>
+</tbody></table>
 <h3 id='checkbox-constructor'>Checkbox.constructor <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h3>
 <blockquote>
-<p>Checkbox.constructor</p>
+<p>Checkbox.constructor(name, value [, config])</p>
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code>  <span class="kr">const</span> <span class="nx">checkbox</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Checkbox</span><span class="p">(</span><span class="s2">"Name"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
 </code></pre>
@@ -1125,48 +1158,295 @@ that Airtable.com will accept (if it needs to convert anything).</p>
   <p class="parameter">
     <span class="name">value</span>
     <span class="type">Boolean</span>
-    <span class="optional"></span>
     <span class="description">
-      Must be an Integer.
-    </span>
-  </p>
-</aside>
-<h3 id='checkbox-get-value'>Checkbox.get value <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h3>
-<blockquote>
-<p>AutoNumber.get value</p>
-</blockquote>
-<pre class="highlight javascript tab-javascript"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">autoNum</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
-</code></pre>
-<blockquote>
-<p>Output:</p>
-</blockquote>
-<pre class="highlight plaintext"><code>1
-</code></pre>
-<aside class="parameters">
-  <p class="title"><span>Return Value</span></p>
-  <p class="parameter">
-    <span class="type">Integer</span>
-    <span class="type">null</span>
-    <span class="description">
-      An Integer, or null if the Field is empty.
+      A Boolean representing whether or not the checkbox is checked.
     </span>
   </p>
 </aside>
 
 <div><!-- spacing --></div>
-<h3 id='autonumber-set-value-2'>AutoNumber.set value <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h3>
-<aside class="warning">
-  The value of this Field cannot be changed.
+<h3 id='checkbox-get-value'>Checkbox.get value <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h3>
+<blockquote>
+<p>Checkbox.get value()</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">checkbox</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+</code></pre>
+<blockquote>
+<p>Output:</p>
+</blockquote>
+<pre class="highlight plaintext"><code>true
+</code></pre>
+<aside class="parameters">
+  <p class="title"><span>Return Value</span></p>
+  <p class="parameter">
+    <span class="type">Boolean</span>
+    <span class="description">
+      A Boolean representing whether or not the checkbox is checked.
+    </span>
+  </p>
 </aside>
+
+<div><!-- spacing --></div>
+<h3 id='checkbox-set-value'>Checkbox.set value <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h3>
+<blockquote>
+<p>Checkbox.set value(value)</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">checkbox</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="o">!</span><span class="nx">checkbox</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">checkbox</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span>
+</code></pre>
+<blockquote>
+<p>Output:</p>
+</blockquote>
+<pre class="highlight plaintext"><code>true
+</code></pre>
+<p>Used to set the value of this Field. Setting this Field to <code>null</code> or <code>undefined</code> will result in the Field being set to false.</p>
+
+<aside class="parameters">
+  <p class="title"><span>Parameters</span></p>
+  <p class="parameter">
+    <span class="name">value</span>
+    <span class="type">Boolean</span>
+    <span class="description">
+      A Boolean representing whether or not the checkbox is checked.<br>
+      '0' or 0 will be set to false.<br>
+      '1' or 1 will be set to true.
+    </span>
+  </p>
+</aside>
+
+<div><!-- spacing --></div>
 <h2 id='collaborator'>Collaborator <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h2>
-<p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
-lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
-lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
-lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
-lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
-lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
-lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
-lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj</p>
+<ul>
+<li>Collaborator
+
+<ul>
+<li><a href="#field">Field</a></li>
+</ul></li>
+</ul>
+
+<p>A collaborator field lets you add collaborators to your records. Collaborators can optionally be notified when they&#39;re added by enabling that option through the Airtable website.</p>
+
+<table><thead>
+<tr>
+<th>Functions</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><a href="#collaborator-constructor">constructor</a></td>
+</tr>
+<tr>
+<td><a href="#collaborator-get-ismulti">get isMulti</a></td>
+</tr>
+<tr>
+<td><a href="#collaborator-get-value">get value</a></td>
+</tr>
+<tr>
+<td><a href="#collaborator-set-ismulti">set isMulti</a></td>
+</tr>
+<tr>
+<td><a href="#collaborator-set-value">set value</a></td>
+</tr>
+</tbody></table>
+<h3 id='collaborator-constructor'>Collaborator.constructor <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h3>
+<blockquote>
+<p>Collaborator.constructor(name, value [, config])</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code>  <span class="kr">const</span> <span class="nx">users</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="na">id</span><span class="p">:</span> <span class="s1">'lkajsdlfkj1l3k'</span><span class="p">,</span>
+      <span class="na">name</span><span class="p">:</span> <span class="s1">'Bob'</span><span class="p">,</span>
+      <span class="na">email</span><span class="p">:</span> <span class="s1">'bob@email.com'</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="na">id</span><span class="p">:</span> <span class="s1">'alsdkfj2lk34j5'</span><span class="p">,</span>
+      <span class="na">name</span><span class="p">:</span> <span class="s1">'Susan'</span><span class="p">,</span>
+      <span class="na">email</span><span class="p">:</span> <span class="s1">'susan@email.org'</span>
+    <span class="p">}</span>
+  <span class="p">];</span>
+
+  <span class="kr">const</span> <span class="nx">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">multi</span><span class="p">:</span> <span class="kc">true</span>
+  <span class="p">};</span>
+
+  <span class="kr">const</span> <span class="nx">collaborator</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Collaborator</span><span class="p">(</span><span class="s2">"Name"</span><span class="p">,</span> <span class="nx">users</span><span class="p">,</span> <span class="nx">config</span><span class="p">);</span>
+</code></pre>
+<p>Initializes a new Collaborator Field.</p>
+
+<aside class="parameters">
+  <p class="title"><span>Parameters</span></p>
+  <p class="parameter">
+    <span class="name">name</span>
+    <span class="type">String</span>
+    <span class="description">
+      The name of the Field as it is on <a href="https://airtable.com">Airtable.com</a>.
+    </span>
+  </p>
+  <p class="parameter">
+    <span class="name">value</span>
+    <span class="type">Object</span>
+    <span class="description">
+      Should be a key-value Object representing an Airtable user.
+    </span>
+  </p>
+  <p class="parameter">
+    <span class="name">value</span>
+    <span class="type">Array</span>
+    <span class="description">
+      Should be an Array of key-value Objects representing an Airtable user.
+    </span>
+  </p>
+  <p class="parameter">
+    <span class="name">config</span>
+    <span class="type">Object</span>
+    <span class="optional"></span>
+    <span class="description">
+      A key-value Object representing the Field Definition.
+    </span>
+  </p>
+</aside>
+
+<blockquote>
+<p>Collaborator Object:</p>
+</blockquote>
+<pre class="highlight plaintext"><code>{
+  id: &lt;String&gt; Airtable User ID
+  email: &lt;String&gt; User's email
+  name: &lt;String&gt; User's full name
+}
+</code></pre>
+<p>You only need to send an Object containing an Airtable User ID or <code>email</code> to add a collaborator. Airtable looks for an <code>id</code> and then looks at the <code>email</code> if an <code>id</code> is not present. Sending a bad <code>id</code> and good <code>email</code> will fail; sending a good <code>id</code> and bad <code>email</code> will succeed; sending only an <code>id</code> will succeed; sending only an <code>email</code> will succeed; sending only a <code>name</code> will fail. Airtable does not look at the <code>name</code>.</p>
+
+<aside class="parameters">
+  <p class="title"><span>Config</span></p>
+  <p class="parameter">
+    <span class="name">multi</span>
+    <span class="type">Boolean</span>
+    <span class="description">
+      default: <code>false</code><br>
+      A Boolean representing whether or not to allow multiple collaborators.
+    </span>
+  </p>
+</aside>
+
+<div><!-- spacing --></div>
+<h3 id='collaborator-get-ismulti'>Collaborator.get isMulti <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h3>
+<blockquote>
+<p>Collaborator.get isMulti</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">collaborator</span><span class="p">.</span><span class="nx">isMulti</span><span class="p">);</span>
+</code></pre>
+<blockquote>
+<p>Output:</p>
+</blockquote>
+<pre class="highlight plaintext"><code>true
+</code></pre>
+<aside class="parameters">
+  <p class="title"><span>Return Value</span></p>
+  <p class="parameter">
+    <span class="type">Boolean</span>
+    <span class="description">
+      A Boolean representing whether or not this field can accept an Array of collaborators.
+    </span>
+  </p>
+</aside>
+
+<div><!-- spacing --></div>
+<h3 id='collaborator-get-value'>Collaborator.get value <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h3>
+<blockquote>
+<p>Collaborator.get value()</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">collaborator</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
+</code></pre>
+<blockquote>
+<p>Output:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">[</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"lkajsdlfkj1l3k"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Bob"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bob@email.com"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"alsdkfj2lk34j5"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Susan"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"susan@email.org"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span></code></pre>
+<aside class="parameters">
+  <p class="title"><span>Return Value</span></p>
+  <p class="parameter">
+    <span class="type">Object</span>
+    <span class="type">Array</span>
+    <span class="type">immutable</span>
+    <span class="description">
+      If the field isMulti, this will return an Array of collaborators, or an empty Array.
+      Otherwise, the field will return a collaborator or null.
+    </span>
+  </p>
+</aside>
+
+<div><!-- spacing --></div>
+<h3 id='collaborator-set-ismulti'>Collaborator.set isMulti <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h3>
+<aside class="warning">
+  This function cannot be used.
+</aside>
+
+<div><!-- spacing --></div>
+<h3 id='collaborator-set-value'>Collaborator.set value <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h3>
+<blockquote>
+<p>Collaborator.set value(value)</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">collaborator</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">collaborator</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">concat</span><span class="p">({</span>
+  <span class="na">id</span><span class="p">:</span> <span class="s1">'lkajlk32jlkasdf0'</span><span class="p">,</span>
+  <span class="na">name</span><span class="p">:</span> <span class="s1">'Greg'</span><span class="p">,</span>
+  <span class="na">email</span><span class="p">:</span> <span class="s1">'greg@email.net'</span>
+<span class="p">});</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">collaborator</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
+</code></pre>
+<blockquote>
+<p>Output:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">[</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"lkajsdlfkj1l3k"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Bob"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bob@email.com"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"alsdkfj2lk34j5"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Susan"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"susan@email.org"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"lkajlk32jlkasdf0"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Greg"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"greg@email.net"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span></code></pre>
+<p>Used to set the value of this Field. Setting this Field to <code>null</code> or <code>undefined</code> will result in the Field being set to false.</p>
+
+<aside class="parameters">
+  <p class="title"><span>Parameters</span></p>
+  <p class="parameter">
+    <span class="name">value</span>
+    <span class="type">Object</span>
+    <span class="description">
+      Should be a key-value Object representing an Airtable user.
+    </span>
+  </p>
+  <p class="parameter">
+    <span class="name">value</span>
+    <span class="type">Array</span>
+    <span class="description">
+      Should be an Array of key-value Objects representing an Airtable user.
+    </span>
+  </p>
+</aside>
+
+<div><!-- spacing --></div>
 <h2 id='count'>Count <img class="header-anchor" src="images/link.svg" title="Click to copy link"></img></h2>
 <p>lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
 lakjsdflkajlsdkjflaksjdflkajsdlfkjalsdkfj
